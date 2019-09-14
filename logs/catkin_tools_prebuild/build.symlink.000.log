@@ -1,0 +1,12 @@
+Symlinking /home/fatima/Firmware/devel/./_setup_util.py
+Symlinking /home/fatima/Firmware/devel/./env.sh
+Symlinking /home/fatima/Firmware/devel/./setup.sh
+Symlinking /home/fatima/Firmware/devel/./local_setup.bash
+Symlinking /home/fatima/Firmware/devel/./cmake.lock
+Symlinking /home/fatima/Firmware/devel/./setup.zsh
+Symlinking /home/fatima/Firmware/devel/./local_setup.sh
+Symlinking /home/fatima/Firmware/devel/./local_setup.zsh
+Symlinking /home/fatima/Firmware/devel/./setup.bash
+Symlinking /home/fatima/Firmware/devel/share/catkin_tools_prebuild/cmake/catkin_tools_prebuildConfig.cmake
+Symlinking /home/fatima/Firmware/devel/share/catkin_tools_prebuild/cmake/catkin_tools_prebuildConfig-version.cmake
+Symlinking /home/fatima/Firmware/devel/lib/pkgconfig/catkin_tools_prebuild.pc

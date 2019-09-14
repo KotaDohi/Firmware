@@ -1,0 +1,1 @@
+/home/fatima/Firmware/devel/.private/basic/lib/pkgconfig/basic.pc

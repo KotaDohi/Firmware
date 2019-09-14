@@ -1,0 +1,1 @@
+/home/fatima/Firmware/devel/.private/basic/share/basic/cmake/basicConfig-version.cmake
