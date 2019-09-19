@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # ROS python API
 import rospy
+import numpy as np
 
 # 3D point & Stamped Pose msgs
 from geometry_msgs.msg import Point, PoseStamped
@@ -80,7 +81,7 @@ class fcuModes:
 
 class Controller:
     # initialization method
-    def __init__(self):
+    def __init__(self,points_x,points_y,points_z):
         # Drone state
         self.state = State()
         # Instantiate a setpoints message
@@ -94,7 +95,7 @@ class Controller:
         # Altitude setpoint, [meters]
         self.ALT_SP = 3.0
         # update the setpoint message with the required altitude
-        self.sp.position.z = self.ALT_SP
+        self.sp.position.z = 0
         # Step size for position update
         self.STEP_SIZE = 2.0
 		# Fence. We will assume a square fence for now
@@ -106,6 +107,11 @@ class Controller:
         # initial values for setpoints
         self.sp.position.x = 0.0
         self.sp.position.y = 0.0
+
+        #trajectory
+        self.points_x = points_x
+        self.points_y = points_y
+        self.points_z = points_z
 
         # speed of the drone is set using MPC_XY_CRUISE parameter in MAVLink
         # using QGroundControl. By default it is 5 m/s.
@@ -123,9 +129,10 @@ class Controller:
         self.state = msg
 
     ## Update setpoint message
-    def updateSp(self):
-        self.sp.position.x = self.local_pos.x
-        self.sp.position.y = self.local_pos.y
+    def updateSp(self,t):
+        self.sp.position.x = self.points_x[t]
+        self.sp.position.y = self.points_y[t]
+        self.sp.position.z = self.points_z[t]
 
     def x_dir(self):
     	self.sp.position.x = self.local_pos.x + 5
@@ -147,6 +154,20 @@ class Controller:
 # Main function
 def main():
 
+    #setpoints for the trajectory
+    radius = 1
+    steps = 300
+    waits = 500
+    points_x = [0]*waits
+    points_y = [0]*waits
+    points_z = np.linspace(0,steps,waits)/steps*3
+    points_z = list(points_z)
+    for i in range(steps):
+        points_x.append(radius*np.cos(2*np.pi*i/steps)-radius)
+        points_y.append(np.sin(2*np.pi*i/steps))
+        points_z.append(3)
+
+
     # initiate node
     rospy.init_node('setpoint_node', anonymous=True)
 
@@ -154,7 +175,7 @@ def main():
     modes = fcuModes()
 
     # controller object
-    cnt = Controller()
+    cnt = Controller(points_x,points_y,points_z)
 
     # ROS loop rate
     rate = rospy.Rate(20.0)
@@ -188,10 +209,16 @@ def main():
     # activate OFFBOARD mode
     modes.setOffboardMode()
 
+
     # ROS main loop
+    t = 0
     while not rospy.is_shutdown():
-    	cnt.updateSp()
+    	cnt.updateSp(t)
+        print(points_x[t],points_y[t],points_z[t])
     	sp_pub.publish(cnt.sp)
+        t+=1
+        if t==(waits+steps):
+            t=waits
     	rate.sleep()
 
 if __name__ == '__main__':
