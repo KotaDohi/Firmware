@@ -87,6 +87,7 @@ class Controller:
         # Instantiate a setpoints message
         self.sp = PositionTarget()
         # set the flag to use position setpoints and yaw angle
+        #check http://docs.ros.org/api/mavros_msgs/html/msg/PositionTarget.html
         self.sp.type_mask = int('010111111000', 2)
         # LOCAL_NED
         self.sp.coordinate_frame = 1
@@ -200,7 +201,7 @@ def main():
     # rate.sleep()
 
     # We need to send few setpoint messages, then activate OFFBOARD mode, to take effect
-    k=0
+    k = 0
     while k<10:
         sp_pub.publish(cnt.sp)
         rate.sleep()
@@ -208,7 +209,6 @@ def main():
 
     # activate OFFBOARD mode
     modes.setOffboardMode()
-
 
     # ROS main loop
     t = 0
