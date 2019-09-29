@@ -166,7 +166,7 @@ def main():
     for i in range(steps):
         points_x.append(radius*np.cos(2*np.pi*i/steps)-radius)
         points_y.append(np.sin(2*np.pi*i/steps))
-        points_z.append(3)
+        points_z.append(5)
 
 
     # initiate node

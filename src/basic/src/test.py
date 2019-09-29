@@ -40,13 +40,13 @@ class Controller:
         self.ALT_SP = 3.0
 
     def posLoad(self,msg):
-        self.load_pos.x = msg.pose[21].position.x
-        self.load_pos.y = msg.pose[21].position.y
-        self.load_pos.z = msg.pose[21].position.z
+        self.load_pos.x = msg.pose[28].position.x
+        self.load_pos.y = msg.pose[28].position.y
+        self.load_pos.z = msg.pose[28].position.z
 
-        self.uav_pos.x = msg.pose[22].position.x
-        self.uav_pos.y = msg.pose[22].position.y
-        self.uav_pos.z = msg.pose[22].position.z
+        self.uav_pos.x = msg.pose[1].position.x
+        self.uav_pos.y = msg.pose[1].position.y
+        self.uav_pos.z = msg.pose[1].position.z
 
     def posUAV(self,msg):
         self.uav_pos.x = msg.pose.position.x
@@ -60,16 +60,16 @@ class Controller:
     def updateSp(self):
         self.sp.position.x = 0
         self.sp.position.y = 0
-        self.sp.position.z = 1.0
+        self.sp.position.z = 5.0
 
     def commander(self):
         self.rel_pos.x = self.uav_pos.x - self.load_pos.x
         self.rel_pos.y = self.uav_pos.y - self.load_pos.y
         self.rel_pos.z = self.uav_pos.z - self.load_pos.z
-        gain = 0.3
-        self.sp.acceleration_or_force.x = -self.rel_pos.y*gain
-        self.sp.acceleration_or_force.y = self.rel_pos.x*gain
-        self.sp.acceleration_or_force.z = 0
+        gain = 0.1
+        self.sp.velocity.x = -self.rel_pos.y*gain
+        self.sp.velocity.y = self.rel_pos.x*gain
+        self.sp.position.z = 5.0
 
 def main():
     # initiate node
@@ -113,7 +113,7 @@ def main():
     modes.setOffboardMode()
 
     cnt.sp.type_mask = int('010111111000', 2)
-    while cnt.uav_pos.z<3:
+    while cnt.uav_pos.z<5:
         print("uav_pos_z:",cnt.uav_pos.z)
         print("load_pos_z:",cnt.load_pos.z)
         cnt.updateSp()
@@ -122,18 +122,23 @@ def main():
 
 
     # ROS main loop
-    cnt.sp.type_mask = int('010000111111', 2)
+    cnt.sp.type_mask = int('010111100011', 2)
     while not rospy.is_shutdown():
     	cnt.commander()
         sp_pub.publish(cnt.sp)
-        print("uav_x",cnt.uav_pos.x)
-        print("uav_y",cnt.uav_pos.y)
-        print("load_x",cnt.load_pos.x)
-        print("load_y",cnt.load_pos.y)
-        print("diff_x:",cnt.rel_pos.x)
-        print("diff_y:",cnt.rel_pos.y)
-        print("force_x:",cnt.sp.acceleration_or_force.x)
-        print("force_y:",cnt.sp.acceleration_or_force.y)
+        if cnt.uav_pos.z>1:
+            print("uav_x",nt.uav_pos.x)
+            print("uav_y",cnt.uav_pos.y)
+            print("load_x",cnt.load_pos.x)
+            print("load_y",cnt.load_pos.y)
+            print("diff_x:",cnt.rel_pos.x)
+            print("diff_y:",cnt.rel_pos.y)
+            print("velocity_x:",cnt.sp.velocity.x)
+            print("velocity_y:",cnt.sp.velocity.y)
+            print("velocity_z:",cnt.sp.velocity.z)
+            print("force_x:",cnt.sp.acceleration_or_force.x)
+            print("force_y:",cnt.sp.acceleration_or_force.y)
+            print("force_z:",cnt.sp.acceleration_or_force.z)
         print("----------------")
     	rate.sleep()
 
