@@ -1,0 +1,1 @@
+/home/fatima/Firmware/devel/./cmake.lock 4
