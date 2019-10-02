@@ -1,0 +1,263 @@
+{#--------------------------------SDF generator for Solo with Tether Gazebo model----------------------------#}
+{#---------------------------------Maintained by Kitepower BV: info@kitepower.nl-----------------------------#}
+{#--------------------------------The parameters bellow are the ones to be tweaked---------------------------#}
+{#--------------------------------------------:Tweakable parameters:-----------------------------------------#}
+{%- set number_elements = 20 -%}
+{%- set tl = 0.2 -%}	  			{#- tl: length of the tether element (meters) -#}
+{%- set cr = 0.001 -%}	  			{#- cr: radius of the tether element (meters) -#}
+{%- set cr_v = 0.003 -%}	  		{#- cr_v: radius of the tether element visual (meters) -#}
+{%- set sr = 0.009 -%}	  			{#- sr: element joint radius (sphere) (meters) -#}
+{%- set m = 0.02 * tl -%}			{#- m: mass of the element (kg), given the length -#}
+{%- set pi = 3.141592 -%}
+{%- set cda = 1.2535816618911175 -%}		{#- cda: the ratio of the drag coefficient before stall. -#}
+{%- set cda_stall = 1.4326647564469914 -%}	{#- cda_stall: the ratio of the drag coefficient after stall. -#}
+{%- set damping = 0.05 -%}			{#- Model damping -#}
+{%- set friction = 0.0 -%}			{#- Friction of the model relative to the world -#}
+{%- set spring_stiffness = 0.01 -%}		{#- Spring stiffness -#}
+{%- set spring_reference = 0.0 -%}		{#- Reference where the spring forces are applied -#}
+{%- set element_color = 'White' -%}		{#- Color of the tether elements -#}
+{%- set joint_color = 'Red' -%}		{#- Color of the tether element joints -#}
+{%- set anchor_point_z = 0.0 -%}		{#- Z coordinate of the anchor point. This is the model global origin -#}
+{%- set vehicle_attach_z = 0.135 -%}		{#- Z coordinate of the attach point. Subtracted to the vehicle spawn position to give the attach point -#}
+{%- set vehicle_to_attach_dist = 0.25 -%}	{#- Relative distance in X from the vehicle to the attachment points. This approach is used instead the vehicle spawn X point to avoid mistakes. WARNING: has to be greater or equal than tl! -#}
+{#-----------------------------------------------------------------------------------------------------------#}
+{#---------------------------------------------:Computed parameters:-----------------------------------------#}
+{%- set last_elem = number_elements |int - 1 -%}
+{%- set full_tether_len = number_elements * tl / 2 + (number_elements - 1) * tl / 2 -%}
+{%- set vehicle_spawn_point_z = anchor_point_z + full_tether_len + vehicle_attach_z -%}
+{%- set box_spawn_point_z = anchor_point_z -%}
+
+
+{#-----------------------------------------------------------------------------------------------------------#}
+
+{%- macro cylinder(tl, cr_v) -%}
+      <geometry>
+          <cylinder>
+            <length>{{tl}}</length>
+            <radius>{{cr_v}}</radius>
+          </cylinder>
+      </geometry>
+{%- endmacro -%}
+
+{%- macro sphere(sr) -%}
+      <geometry>
+          <sphere>
+            <radius>{{sr}}</radius>
+          </sphere>
+      </geometry>
+{%- endmacro -%}
+
+{%- macro inertial(m) -%}
+{#- A note about the inertial tensor matrix - It should be as bellow -#}
+{#- {%- set izz = m/2*cr**2 -%} -#}
+{#- {%- set ixx = m/12*tl**2 + m/4*cr**2 -%} -#}
+{#- {%- set iyy = m/12*tl**2 + m/4*cr**2 -%} -#}
+{#- but seems to segfault Gazebo when changing the values of the element specs -#}
+{%- set izz = 0.01 -%}
+{%- set ixx = 0.01 -%}
+{%- set iyy = 0.01 -%}
+      <inertial>
+        <mass>{{m}}</mass>
+        <inertia>
+          <ixx>{{ixx}}</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>{{iyy}}</iyy>
+          <iyz>0</iyz>
+          <izz>{{izz}}</izz>
+        </inertia>
+      </inertial>universal
+{%- endmacro -%}
+
+{%- macro collision(tl, cr) -%}
+<collision name="collision">
+        <pose> 0 0 {{tl / 2}} 0 0 0</pose>
+        {{ cylinder(tl, cr) }}
+        <surface>
+          <contact>
+            <ode>
+	      <min_depth>0.00005</min_depth>
+            </ode>
+          </contact>
+          <friction>
+            <ode>
+	      <mu>1.0</mu>
+	      <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+{%- endmacro -%}
+
+{%- macro element_material(element_color) -%}
+      <material>
+        <script>
+          <name>Gazebo/{{element_color}}</name>
+          <uri>file://media/materials/scripts/gazebo.material</uri>
+        </script>
+      </material>
+{%- endmacro -%}
+
+{%- macro joint_material(joint_color) -%}
+      <material>
+        <script>universal
+          <name>Gazebo/{{joint_color}}</name>
+          <uri>file://media/materials/scripts/gazebo.material</uri>
+        </script>
+      </material>
+{%- endmacro -%}
+
+{%- macro element_visual(tl, cr_v, element_color) -%}
+{%- set z = tl * 0.5 -%}
+      <visual name="element_visual">
+        <pose>0 0 {{z}} 0 0 0</pose>
+        {{ cylinder(tl, cr_v) }}
+        {{ element_material(element_color) }}
+      </visual>
+{%- endmacro -%}
+
+{%- macro sphere_visual(sr, sphere_tlor) -%}
+      <visual name="sphere_visual">
+        {{ sphere(sr) }}
+        {{ joint_material(joint_color) }}
+      </visual>
+{%- endmacro -%}
+
+{%- macro link(n, x, y, z, theta, m, tl, cr, cr_v, sr, element_color, joint_color) -%}
+    <link name="link_{{n}}">
+      <gravity>true</gravity>
+      <pose>{{x}} {{y}} {{z}} 0.0 0.0 {{theta}}</pose>
+      {{ inertial(m) }}
+      {%- if n != 0  -%}
+      {{ collision(tl, cr) }}
+      {{ element_visual(tl, cr_v, element_color) }}
+      {{ sphere_visual(sr, joint_color) }}
+      {%- endif -%}
+    </link>
+{%- endmacro %}
+
+{%- macro joint(k, damping, friction, spring_stiffness, spring_reference, joint_type) -%}
+{%- if k is number -%}
+{%- set link_n = k - 1 -%}
+    <joint name="joint_{{k}}" type="{{joint_type}}">
+      <child>link_{{k}}</child>
+      <parent>link_{{link_n}}</parent>
+{%- endif %}
+      <axis>
+        <xyz>0 1 0</xyz>
+        <dynamics>
+          <damping>{{damping}}</damping>
+          <friction>{{friction}}</friction>
+          <spring_stiffness>{{spring_stiffness}}</spring_stiffness>
+          <spring_reference>{{spring_reference}}</spring_reference>
+        </dynamics>
+        <use_parent_model_frame>true</use_parent_model_frame>
+      </axis>
+      <axis2>
+        <xyz>1 0 0</xyz>
+        <dynamics>
+          <damping>{{damping}}</damping>
+          <friction>{{friction}}</friction>
+          <spring_stiffness>{{spring_stiffness}}</spring_stiffness>
+          <spring_reference>{{spring_reference}}</spring_reference>
+        </dynamics>
+        <use_parent_model_frame>true</use_parent_model_frame>
+      </axis2>
+      <physics>
+        <ode>
+          <cfm_damping>1</cfm_damping>
+        </ode>
+      </physics>
+    </joint>
+{%- endmacro -%}
+
+{%- macro lift_drag(n, tl, cr) -%}
+{%- set area = 2 * cr * tl -%}
+    <plugin name="link_{{n}}_drag" filename="libLiftDragPlugin.so">
+      <robotNamespace></robotNamespace>
+      <a0>0</a0>
+      <cla>0</cla>
+      <cda>{{cda}}</cda>
+      <alpha_stall>0</alpha_stall>
+      <cda_stall>{{cda_stall}}</cda_stall>
+      <useConstantDragCoefficient>true</useConstantDragCoefficient>
+      <cp>{{cr}} {{cr}} {{tl / 2}}</cp>
+      <area>{{area}}</area>
+      <air_density>1.2041</air_density>
+      <forward>0 0 1</forward>
+      <upward>1 0 0</upward>
+      <link_name>link_{{n}}</link_name>
+    </plugin>
+{%- endmacro %}
+
+<?xml version="1.0" ?>
+<!-- DO NOT EDIT: Generated from solo_with_tether.sdf.jinja -->
+<sdf version="1.5">
+  <model name="solo_with_tether">
+    <pose>0.0 0.0 0.0 0.0 0.0 0.0</pose>
+    {% for n in range(number_elements) -%}
+    {%- set z = anchor_point_z + (tl / 2 + (n * tl / 2 + (n - 1) * tl / 2)) -%}
+    {{ link(n, 0, 0, z, 0.0, m, tl, cr, cr_v, sr, element_color, joint_color) }}
+    {{ lift_drag(n, tl, cr) }}
+    {% endfor -%}
+
+    {% for k in range(1, number_elements) -%}
+    {{ joint(k, damping, friction, spring_stiffness, spring_reference, "universal") }}
+    {% endfor -%}
+
+    <joint name="joint_last" type="universal">
+       <child>iris::base_link</child>
+       <parent>link_{{last_elem}}</parent>
+    </joint>
+
+    <link name="box_link">
+      <pose> 0 0 0.27 0 0 0 </pose>
+      <inertial>
+        <mass>0.1</mass>
+        <inertia>
+          <ixx>0.01</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.01</iyy>
+          <iyz>0</iyz>
+          <izz>0.01</izz>
+        </inertia>
+      </inertial>
+
+      <collision name="collision">
+        <geometry>
+        <sphere>
+          <radius>0.15</radius>
+        </sphere>
+        </geometry>
+	      <surface>
+          <contact>
+            <ode>
+              <max_vel>0.1</max_vel>
+              <min_depth>0.001</min_depth>
+            </ode>
+          </contact>
+        </surface>
+      </collision>
+
+      <visual name="visual">
+        <geometry>
+        <sphere>
+          <radius>0.15</radius>
+        </sphere>
+        </geometry>
+      </visual>
+    </link>
+
+    <joint name="joint_box" type="fixed">
+      <child>box_link</child>
+      <parent>link_0</parent>
+    </joint>
+
+    <include>
+      <uri>model://iris</uri>
+      <pose>0.0 0.0 {{vehicle_spawn_point_z}} 0.0 0.0 0.0</pose>
+    </include>
+
+  </model>
+</sdf>

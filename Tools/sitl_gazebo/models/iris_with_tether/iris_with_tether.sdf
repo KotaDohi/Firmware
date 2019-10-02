@@ -1,0 +1,101 @@
+<sdf version='1.5'>
+  <model name='iris_with_tether'>
+    <include>
+      <uri>model://iris</uri>
+    </include>
+    <include>
+      <uri>model://simple_tether</uri>
+      <pose>-0.10 0 -0.04 0 3.1415 0</pose>
+    </include>
+
+
+    <link name='iris_center'>
+      <pose>0 0 -0.04 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.005</mass>
+        <inertia>
+          <ixx>1e-05</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1e-05</iyy>
+          <iyz>0</iyz>
+          <izz>1e-05</izz>
+        </inertia>
+      </inertial>
+    </link>
+    <joint name='iris_center_joint' type='fixed'>
+      <child>iris_center</child>
+      <parent>iris::base_link</parent>
+    </joint>
+    <joint name="tether_iris_center_joint" type="universal">
+      <child>iris_center</child>
+      <parent>simple_tether::link_0</parent>
+    </joint>
+
+    <link name="box_link">
+      <pose> -3.945 0 0 0 0 0 </pose>
+      <inertial>
+        <mass>0.1</mass>
+        <inertia>
+          <ixx>0.01</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.01</iyy>
+          <iyz>0</iyz>
+          <izz>0.01</izz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+        <sphere>
+          <radius>0.15</radius>
+        </sphere>
+        </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <max_vel>0.1</max_vel>
+              <min_depth>0.001</min_depth>
+            </ode>
+          </contact>
+        </surface>
+      </collision>
+
+      <visual name="visual">
+        <geometry>
+        <sphere>
+          <radius>0.15</radius>
+        </sphere>
+        </geometry>
+      </visual>
+    </link>
+
+    <link name='box_center'>
+      <pose>-3.795 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.005</mass>
+        <inertia>
+          <ixx>1e-05</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1e-05</iyy>
+          <iyz>0</iyz>
+          <izz>1e-05</izz>
+        </inertia>
+      </inertial>
+    </link>
+
+    <joint name='box_center_joint' type='fixed'>
+      <child>box_center</child>
+      <parent>box_link</parent>
+    </joint>
+
+    <joint name="tether_box_center_joint" type="fixed">
+      <child>box_center</child>
+      <parent>simple_tether::link_19</parent>
+    </joint>
+
+  </model>
+</sdf>
