@@ -135,39 +135,21 @@ class Controller:
         self.sp.position.y = self.points_y[t]
         self.sp.position.z = self.points_z[t]
 
-    def x_dir(self):
-    	self.sp.position.x = self.local_pos.x + 5
-    	self.sp.position.y = self.local_pos.y
-
-    def neg_x_dir(self):
-    	self.sp.position.x = self.local_pos.x - 5
-    	self.sp.position.y = self.local_pos.y
-
-    def y_dir(self):
-    	self.sp.position.x = self.local_pos.x
-    	self.sp.position.y = self.local_pos.y + 5
-
-    def neg_y_dir(self):
-    	self.sp.position.x = self.local_pos.x
-    	self.sp.position.y = self.local_pos.y - 5
-
 
 # Main function
 def main():
-
     #setpoints for the trajectory
-    radius = 1
-    steps = 300
-    waits = 500
+    radius = 3.8
+    steps = 200
+    waits = 300
     points_x = [0]*waits
     points_y = [0]*waits
-    points_z = np.linspace(0,steps,waits)/steps*3
+    points_z = np.linspace(0,steps,waits)/steps*5
     points_z = list(points_z)
     for i in range(steps):
-        points_x.append(radius*np.cos(2*np.pi*i/steps)-radius)
-        points_y.append(np.sin(2*np.pi*i/steps))
+        points_x.append(radius*np.cos(2*np.pi*i/steps)-3.8)
+        points_y.append(radius*np.sin(2*np.pi*i/steps))
         points_z.append(5)
-
 
     # initiate node
     rospy.init_node('setpoint_node', anonymous=True)
@@ -214,8 +196,8 @@ def main():
     t = 0
     while not rospy.is_shutdown():
     	cnt.updateSp(t)
-        print(points_x[t],points_y[t],points_z[t])
     	sp_pub.publish(cnt.sp)
+        print(cnt.sp)
         t+=1
         if t==(waits+steps):
             t=waits
