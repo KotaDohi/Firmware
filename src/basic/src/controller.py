@@ -5,6 +5,7 @@ import numpy as np
 import set_point
 import time
 import scipy.linalg
+import control
 
 # 3D point & Stamped Pose msgs
 from geometry_msgs.msg import Point, PoseStamped
@@ -54,7 +55,7 @@ class Controller:
         # parameers of the system
         self.l = 4.01 #length of the tether
         self.r = 3.0 #radius of the UAV circle
-        self.p0 = 3.0 #radius of the load circle
+        self.p0 = 0.8 #radius of the load circle
         self.g = 9.80665 #gravity
 
     def init_position(self):
@@ -67,16 +68,16 @@ class Controller:
         self.state = msg
 
     def get_position(self,msg):
-        self.load_pos.x = msg.pose[28].position.x
-        self.load_pos.y = msg.pose[28].position.y
+        self.load_pos.x = msg.pose[28].position.x - msg.pose[1].position.x
+        self.load_pos.y = msg.pose[28].position.y - msg.pose[1].position.y
         self.load_pos.z = msg.pose[28].position.z
 
         self.uav_pos.x = msg.pose[1].position.x
         self.uav_pos.y = msg.pose[1].position.y
         self.uav_pos.z = msg.pose[1].position.z
 
-        self.load_vel.x = msg.twist[28].linear.x
-        self.load_vel.y = msg.twist[28].linear.y
+        self.load_vel.x = msg.twist[28].linear.x - msg.twist[1].linear.x
+        self.load_vel.y = msg.twist[28].linear.y - msg.twist[1].linear.y
         self.load_vel.z = msg.twist[28].linear.z
 
         self.uav_vel.x = msg.twist[1].linear.x
@@ -121,7 +122,7 @@ class Controller:
         v2 = -2*self.omega
         v3 = self.omega**2
         w1 = np.cos(mu0)
-        w2 = a0*np.sin(mu0)
+        w2 = -a0*np.sin(mu0)
 
         self.A = np.array([[0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
                            [p1,0, 0, p2,0, 0, 0, 0, 0, 0],
@@ -148,12 +149,26 @@ class Controller:
         #print("B",self.B)
 
     def lqr(self):
-        Q = 0.1*np.eye(10)
-        R = np.eye(3)
-        P = np.matrix(scipy.linalg.solve_discrete_are(self.A, self.B, Q, R))
-        self.u = -scipy.linalg.inv(R)*(self.B.T*(P*self.lqr_x))
+        Q = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
+        #Q = np.zeros([10,10])
+        R = 1000*np.eye(3)
+        K, S, E = control.lqr(self.A, self.B, Q, R)
+        #P = np.matrix(scipy.linalg.solve_discrete_are(self.A, self.B, Q, R))
+        self.u = -scipy.linalg.inv(R)*(self.B.T*(S*self.lqr_x))
         #self.u = -np.matrix(scipy.linalg.inv(self.B.T*P*self.B+R)*(self.B.T*P*self.A))*self.lqr_x
-        print("u",self.u)
+        #print("S",S)
+        #print("B",self.B)
+        #print("x",self.lqr_x)
+        #print("u",self.u)
 
     def cal_omegas(self):
         gamma = np.arcsin(np.sin(float(self.u[1]))*np.cos(self.omega*self.t) - np.sin(float(self.u[0]))*np.cos(float(self.u[1]))*np.sin(self.omega*self.t))
@@ -177,7 +192,7 @@ class Controller:
         self.sp.body_rate.x = self.omegas[0]
         self.sp.body_rate.y = self.omegas[1]
         self.sp.body_rate.z = self.omegas[2]
-        self.sp.thrust = float(self.u[2])
+        self.sp.thrust = float(self.u[2])/15.56
         print("omegas",self.omegas[0],self.omegas[1],self.omegas[2],float(self.u[2]))
 
 def main():
@@ -235,6 +250,7 @@ def main():
 
     # ROS main loop
     t_start = time.time()
+    cnt.p0 = cnt.uav_pos.x - cnt.load_pos.x
     while not rospy.is_shutdown():
         t = time.time() - t_start
         cnt.output(t)
