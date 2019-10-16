@@ -139,8 +139,8 @@ class Controller:
 # Main function
 def main():
     #setpoints for the trajectory
-    radius = 3.8
-    steps = 200
+    radius = 100.0
+    steps = 300
     waits = 300
     points_x = [0]*waits
     points_y = [0]*waits
@@ -161,7 +161,7 @@ def main():
     cnt = Controller(points_x,points_y,points_z)
 
     # ROS loop rate
-    rate = rospy.Rate(20.0)
+    rate = rospy.Rate(100.0)
 
     # Subscribe to drone state
     rospy.Subscriber('mavros/state', State, cnt.stateCb)
@@ -197,7 +197,7 @@ def main():
     while not rospy.is_shutdown():
     	cnt.updateSp(t)
     	sp_pub.publish(cnt.sp)
-        print(cnt.sp)
+        #print(cnt.sp)
         t+=1
         if t==(waits+steps):
             t=waits
