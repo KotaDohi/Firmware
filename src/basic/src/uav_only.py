@@ -54,7 +54,8 @@ class Controller:
 
         # parameers of the system
         self.l = 4.01 #length of the tether
-        self.r = 3.0 #radius of the UAV circle
+        self.r = 2.0 #radius of the UAV circle
+        self.omega = 0.5*np.pi
         self.g = 9.80665 #gravity
 
     def init_position(self):
@@ -82,8 +83,8 @@ class Controller:
         self.uav_att.y = pitch
         self.uav_att.z = yaw
 
-    def lqr_xr(self):
-        x = np.matrix([self.uav_pos.x, self.uav_vel.x, self.uav_att.y]).T
+    def lqr_xr(self,x):
+        x = np.matrix([self.uav_pos.x - x, self.uav_vel.x, self.uav_att.y]).T
         A = np.array([[0, 1, 0],
                       [0, 0, self.g],
                       [0, 0, 0]])
@@ -94,8 +95,8 @@ class Controller:
         R = np.array([[1]])
         self.omega_y = float(self.lqr(x,A,B,Q,R))
 
-    def lqr_ys(self):
-        x = np.matrix([self.uav_pos.y, self.uav_vel.y, self.uav_att.x]).T
+    def lqr_ys(self,y):
+        x = np.matrix([self.uav_pos.y - y, self.uav_vel.y, self.uav_att.x]).T
         A = np.array([[0, 1, 0],
                       [0, 0, -self.g],
                       [0, 0, 0]])
@@ -123,16 +124,20 @@ class Controller:
     def lqr(self,x,A,B,Q,R):
         K, S, E = control.lqr(A, B, Q, R)
         u = -scipy.linalg.inv(R)*(B.T*(S*x))
-        if B.size==2:
+        #if B.size==2:
             #print("S",S)
-            print("x",x)
+            #print("x",x)
             #print("B",self.B)
         return u
 
     def output(self,t):
         self.t = t
-        self.lqr_xr()
-        self.lqr_ys()
+        x = self.r*np.cos(self.omega*t)
+        y = self.r*np.sin(self.omega*t)
+        print("x",x)
+        print("y",y)
+        self.lqr_xr(x)
+        self.lqr_ys(y)
         self.lqr_z()
         self.sp.body_rate.x = self.omega_x
         self.sp.body_rate.y = self.omega_y

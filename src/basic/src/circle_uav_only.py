@@ -6,6 +6,7 @@ import set_point
 import time
 import scipy.linalg
 import control
+from tf.transformations import euler_from_quaternion
 
 # 3D point & Stamped Pose msgs
 from geometry_msgs.msg import Point, PoseStamped
@@ -19,9 +20,9 @@ class Controller:
         #Drone state
         self.state = State()
         self.uav_pos = Point(0.0, 0.0, 3.0)
-        self.load_pos = Point(0.0, 0.0, 0.0)
+        #self.load_pos = Point(0.0, 0.0, 0.0)
         self.uav_vel = Point(0.0, 0.0, 0.0)
-        self.load_vel = Point(0.0, 0.0, 0.0)
+        #self.load_vel = Point(0.0, 0.0, 0.0)
         # Instantiate a attitude setpoints message
         self.sp = AttitudeTarget()
         # set the flag to use body_rates and thrust
@@ -52,10 +53,10 @@ class Controller:
         # We will fly at a fixed altitude for now
         self.ALT_SP = 3.0
 
-        # parameers of the system
+        # parameters of the system
         self.l = 4.01 #length of the tether
         self.r = 3.0 #radius of the UAV circle
-        self.p0 = 0.8 #radius of the load circle
+        #self.p0 = 0.8 #radius of the load circle
         self.g = 9.80665 #gravity
 
     def init_position(self):
@@ -68,38 +69,46 @@ class Controller:
         self.state = msg
 
     def get_position(self,msg):
-        self.load_pos.x = msg.pose[28].position.x - msg.pose[1].position.x
-        self.load_pos.y = msg.pose[28].position.y - msg.pose[1].position.y
-        self.load_pos.z = msg.pose[28].position.z
+        #self.load_pos.x = msg.pose[28].position.x - msg.pose[1].position.x
+        #self.load_pos.y = msg.pose[28].position.y - msg.pose[1].position.y
+        #self.load_pos.z = msg.pose[28].position.z
 
         self.uav_pos.x = msg.pose[1].position.x
         self.uav_pos.y = msg.pose[1].position.y
         self.uav_pos.z = msg.pose[1].position.z
 
-        self.load_vel.x = msg.twist[28].linear.x - msg.twist[1].linear.x
-        self.load_vel.y = msg.twist[28].linear.y - msg.twist[1].linear.y
-        self.load_vel.z = msg.twist[28].linear.z
+        #self.load_vel.x = msg.twist[28].linear.x - msg.twist[1].linear.x
+        #self.load_vel.y = msg.twist[28].linear.y - msg.twist[1].linear.y
+        #self.load_vel.z = msg.twist[28].linear.z
 
         self.uav_vel.x = msg.twist[1].linear.x
         self.uav_vel.y = msg.twist[1].linear.y
         self.uav_vel.z = msg.twist[1].linear.z
 
+        orientation_q = msg.pose[1].orientation
+        orientation_list = [orientation_q.x, orientation_q.y, orientation_q.z, orientation_q.w]
+        (roll, pitch, yaw) = euler_from_quaternion(orientation_list)
+        self.uav_att.x = roll
+        self.uav_att.y = pitch
+        self.uav_att.z = yaw
+
     def cal_x(self):
         uav_pos = np.array([self.uav_pos.x, self.uav_pos.y, self.uav_pos.z])
-        load_pos = np.array([self.load_pos.x, self.load_pos.y])
+        #load_pos = np.array([self.load_pos.x, self.load_pos.y])
         uav_vel = np.array([self.uav_vel.x, self.uav_vel.y, self.uav_vel.z])
-        load_vel = np.array([self.load_vel.x, self.load_vel.y])
+        #load_vel = np.array([self.load_vel.x, self.load_vel.y])
 
         rot_matrix1 = np.array([[np.cos(self.omega*self.t), np.sin(self.omega*self.t), 0], [-np.sin(self.omega*self.t), np.cos(self.omega*self.t), 0], [0, 0, 1]])
         rot_matrix2 = np.array([[np.sin(self.omega*self.t), -np.cos(self.omega*self.t), 0], [np.cos(self.omega*self.t), np.sin(self.omega*self.t), 0], [0, 0, 0]])
 
         inv_uav_pos = np.dot(rot_matrix1, uav_pos)
         inv_uav_vel = np.dot(rot_matrix1, uav_vel) - self.omega*np.dot(rot_matrix2, uav_pos)
-        inv_load_pos = np.dot(rot_matrix1[:2,:2], load_pos)
-        inv_load_vel = np.dot(rot_matrix1[:2,:2], load_vel) - self.omega*np.dot(rot_matrix2[:2,:2], load_pos)
+        #inv_load_pos = np.dot(rot_matrix1[:2,:2], load_pos)
+        #inv_load_vel = np.dot(rot_matrix1[:2,:2], load_vel) - self.omega*np.dot(rot_matrix2[:2,:2], load_pos)
 
-        self.lqr_x = np.matrix([inv_load_pos[0],  inv_load_vel[0], inv_load_pos[1], inv_load_vel[1], inv_uav_pos[0],
-        inv_uav_vel[0], inv_uav_pos[1], inv_uav_vel[1], inv_uav_pos[2], inv_uav_vel[2]]).T
+        #self.lqr_x = np.matrix([inv_load_pos[0],  inv_load_vel[0], inv_load_pos[1], inv_load_vel[1], inv_uav_pos[0],
+        #inv_uav_vel[0], inv_uav_pos[1], inv_uav_vel[1], inv_uav_pos[2], inv_uav_vel[2]]).T
+        self.lqr_x = np.matrix([inv_uav_pos[0], inv_uav_vel[0], inv_uav_pos[1], inv_uav_vel[1], inv_uav_pos[2], inv_uav_vel[2], self.]).T
         #print("lqr_x",self.lqr_x)
 
     def cal_AB(self):

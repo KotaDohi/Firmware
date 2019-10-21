@@ -139,17 +139,18 @@ class Controller:
 # Main function
 def main():
     #setpoints for the trajectory
-    radius = 100.0
-    steps = 300
+    radius = 5.0
+    steps = 800
+    zsteps = 3*300
     waits = 300
     points_x = [0]*waits
     points_y = [0]*waits
     points_z = np.linspace(0,steps,waits)/steps*5
     points_z = list(points_z)
     for i in range(steps):
-        points_x.append(radius*np.cos(2*np.pi*i/steps)-3.8)
+        points_x.append(radius*np.cos(2*np.pi*i/steps))
         points_y.append(radius*np.sin(2*np.pi*i/steps))
-        points_z.append(5)
+        points_z.append(20)#+1*np.sin(2*np.pi*i/steps))
 
     # initiate node
     rospy.init_node('setpoint_node', anonymous=True)
