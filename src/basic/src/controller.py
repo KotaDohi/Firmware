@@ -13,6 +13,7 @@ from gazebo_msgs.msg import LinkStates
 # import all mavros messages and services
 from mavros_msgs.msg import *
 from mavros_msgs.srv import *
+from tf.transformations import euler_from_quaternion
 
 class Controller:
     def __init__(self):
@@ -68,21 +69,28 @@ class Controller:
         self.state = msg
 
     def get_position(self,msg):
-        self.load_pos.x = msg.pose[28].position.x - msg.pose[1].position.x
-        self.load_pos.y = msg.pose[28].position.y - msg.pose[1].position.y
-        self.load_pos.z = msg.pose[28].position.z
+        self.load_pos.x = msg.pose[9].position.x - msg.pose[1].position.x
+        self.load_pos.y = msg.pose[9].position.y - msg.pose[1].position.y
+        self.load_pos.z = msg.pose[9].position.z
 
         self.uav_pos.x = msg.pose[1].position.x
         self.uav_pos.y = msg.pose[1].position.y
         self.uav_pos.z = msg.pose[1].position.z
 
-        self.load_vel.x = msg.twist[28].linear.x - msg.twist[1].linear.x
-        self.load_vel.y = msg.twist[28].linear.y - msg.twist[1].linear.y
-        self.load_vel.z = msg.twist[28].linear.z
+        self.load_vel.x = msg.twist[9].linear.x - msg.twist[1].linear.x
+        self.load_vel.y = msg.twist[9].linear.y - msg.twist[1].linear.y
+        self.load_vel.z = msg.twist[9].linear.z
 
         self.uav_vel.x = msg.twist[1].linear.x
         self.uav_vel.y = msg.twist[1].linear.y
         self.uav_vel.z = msg.twist[1].linear.z
+
+        orientation_q = msg.pose[1].orientation
+        orientation_list = [orientation_q.x, orientation_q.y, orientation_q.z, orientation_q.w]
+        (roll, pitch, yaw) = euler_from_quaternion(orientation_list)
+        self.uav_att.x = roll
+        self.uav_att.y = pitch
+        self.uav_att.z = yaw
 
     def cal_x(self):
         uav_pos = np.array([self.uav_pos.x, self.uav_pos.y, self.uav_pos.z])
@@ -192,7 +200,10 @@ class Controller:
         self.sp.body_rate.x = self.omegas[0]
         self.sp.body_rate.y = self.omegas[1]
         self.sp.body_rate.z = self.omegas[2]
-        self.sp.thrust = float(self.u[2])/15.56
+        if self.a >=0:
+            self.sp.thrust = 0.613 + self.a/40.54
+        else:
+            self.sp.thrust = 0.613 + self.a/15.98
         print("omegas",self.omegas[0],self.omegas[1],self.omegas[2],float(self.u[2]))
 
 def main():

@@ -70,17 +70,17 @@ class Controller:
         self.state = msg
 
     def get_position(self,msg):
-        self.load_pos.x = msg.pose[28].position.x - msg.pose[1].position.x
-        self.load_pos.y = msg.pose[28].position.y - msg.pose[1].position.y
-        self.load_pos.z = msg.pose[28].position.z
+        self.load_pos.x = msg.pose[9].position.x - msg.pose[1].position.x
+        self.load_pos.y = msg.pose[9].position.y - msg.pose[1].position.y
+        self.load_pos.z = msg.pose[9].position.z
 
         self.uav_pos.x = msg.pose[1].position.x
         self.uav_pos.y = msg.pose[1].position.y
         self.uav_pos.z = msg.pose[1].position.z
 
-        self.load_vel.x = msg.twist[28].linear.x - msg.twist[1].linear.x
-        self.load_vel.y = msg.twist[28].linear.y - msg.twist[1].linear.y
-        self.load_vel.z = msg.twist[28].linear.z
+        self.load_vel.x = msg.twist[9].linear.x - msg.twist[1].linear.x
+        self.load_vel.y = msg.twist[9].linear.y - msg.twist[1].linear.y
+        self.load_vel.z = msg.twist[9].linear.z
 
         self.uav_vel.x = msg.twist[1].linear.x
         self.uav_vel.y = msg.twist[1].linear.y
@@ -101,12 +101,12 @@ class Controller:
                       [0, 0, 0, 0, self.g],
                       [0, 0, 0, 0, 0]])
         B = np.matrix([0, 0, 0, 0, 1]).T
-        Q = np.array([[0, 0, 0, 0, 0],
+        Q = np.array([[1, 0, 0, 0, 0],
                       [0, 0, 0, 0, 0],
                       [0, 0, 1, 0, 0],
                       [0, 0, 0, 0, 0],
                       [0, 0, 0, 0, 0]])
-        R = np.array([[10]])
+        R = np.array([[1]])
         self.omega_y = float(self.lqr(x,A,B,Q,R))
 
     def lqr_ys(self):
@@ -117,12 +117,12 @@ class Controller:
                       [0, 0, 0, 0, -self.g],
                       [0, 0, 0, 0, 0]])
         B = np.matrix([0, 0, 0, 0, 1]).T
-        Q = np.array([[0, 0, 0, 0, 0],
+        Q = np.array([[1, 0, 0, 0, 0],
                       [0, 0, 0, 0, 0],
                       [0, 0, 1, 0, 0],
                       [0, 0, 0, 0, 0],
                       [0, 0, 0, 0, 0]])
-        R = np.array([[10]])
+        R = np.array([[1]])
         self.omega_x = float(self.lqr(x,A,B,Q,R))
 
     def lqr_z(self):
@@ -130,9 +130,9 @@ class Controller:
         A = np.array([[0, 1],
                       [0, 0]])
         B = np.matrix([0, 1]).T
-        Q = np.array([[0.01, 0],
+        Q = np.array([[1, 0],
                      [0, 0]])
-        R = np.array([[0.1]])
+        R = np.array([[1]])
         self.a = float(self.lqr(x,A,B,Q,R))
         #calculate waypoint value for u
         xe = np.matrix([6.0, 0.0]).T

@@ -81,7 +81,7 @@ class fcuModes:
 
 class Controller:
     # initialization method
-    def __init__(self,points_x,points_y,points_z):
+    def __init__(self):
         # Drone state
         self.state = State()
         # Instantiate a setpoints message
@@ -94,7 +94,7 @@ class Controller:
 
         # We will fly at a fixed altitude for now
         # Altitude setpoint, [meters]
-        self.ALT_SP = 3.0
+        self.ALT_SP = 1.0
         # update the setpoint message with the required altitude
         self.sp.position.z = 0
         # Step size for position update
@@ -108,11 +108,6 @@ class Controller:
         # initial values for setpoints
         self.sp.position.x = 0.0
         self.sp.position.y = 0.0
-
-        #trajectory
-        self.points_x = points_x
-        self.points_y = points_y
-        self.points_z = points_z
 
         # speed of the drone is set using MPC_XY_CRUISE parameter in MAVLink
         # using QGroundControl. By default it is 5 m/s.
@@ -130,27 +125,26 @@ class Controller:
         self.state = msg
 
     ## Update setpoint message
-    def updateSp(self,t):
-        self.sp.position.x = self.points_x[t]
-        self.sp.position.y = self.points_y[t]
-        self.sp.position.z = self.points_z[t]
+    def updateSp(self,t,height,radius,steps):
+        self.sp.position.x = 0#radius*np.cos(2*np.pi*t/steps)
+        self.sp.position.y = 0#radius*np.sin(2*np.pi*t/steps)
+        z_points = 1500
+
+        self.sp.position.z = height
+        #if t<1500:
+        #    self.sp.position.z = height/1500*t
+        #    print(self.sp.position.z)
+        #else:
+        #    self.sp.position.z = height
 
 
 # Main function
 def main():
     #setpoints for the trajectory
-    radius = 5.0
-    steps = 800
-    zsteps = 3*300
+    radius = 0.0
+    steps = 200
     waits = 300
-    points_x = [0]*waits
-    points_y = [0]*waits
-    points_z = np.linspace(0,steps,waits)/steps*5
-    points_z = list(points_z)
-    for i in range(steps):
-        points_x.append(radius*np.cos(2*np.pi*i/steps))
-        points_y.append(radius*np.sin(2*np.pi*i/steps))
-        points_z.append(20)#+1*np.sin(2*np.pi*i/steps))
+    height = 6.0
 
     # initiate node
     rospy.init_node('setpoint_node', anonymous=True)
@@ -159,7 +153,7 @@ def main():
     modes = fcuModes()
 
     # controller object
-    cnt = Controller(points_x,points_y,points_z)
+    cnt = Controller()
 
     # ROS loop rate
     rate = rospy.Rate(100.0)
@@ -173,6 +167,8 @@ def main():
     # Setpoint publisher
     sp_pub = rospy.Publisher('mavros/setpoint_raw/local', PositionTarget, queue_size=1)
 
+    # Attitude Publisher
+    sp_att = rospy.Publisher('mavros/setpoint_raw/attitude', AttitudeTarget, queue_size=1)
 
     # Make sure the drone is armed
     while not cnt.state.armed:
@@ -180,8 +176,8 @@ def main():
         rate.sleep()
 
     # set in takeoff mode and takeoff to default altitude (3 m)
-    # modes.setTakeoff()
-    # rate.sleep()
+    modes.setTakeoff()
+    rate.sleep()
 
     # We need to send few setpoint messages, then activate OFFBOARD mode, to take effect
     k = 0
@@ -195,13 +191,11 @@ def main():
 
     # ROS main loop
     t = 0
+    print("start")
     while not rospy.is_shutdown():
-    	cnt.updateSp(t)
+    	cnt.updateSp(t,height,radius,steps)
     	sp_pub.publish(cnt.sp)
-        #print(cnt.sp)
         t+=1
-        if t==(waits+steps):
-            t=waits
     	rate.sleep()
 
 if __name__ == '__main__':
