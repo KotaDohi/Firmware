@@ -5,9 +5,12 @@ import numpy as np
 
 # 3D point & Stamped Pose msgs
 from geometry_msgs.msg import Point, PoseStamped
+from gazebo_msgs.msg import LinkStates
 # import all mavros messages and services
 from mavros_msgs.msg import *
 from mavros_msgs.srv import *
+
+import time
 
 # Flight modes class
 # Flight modes are activated using ROS services
@@ -81,7 +84,7 @@ class fcuModes:
 
 class Controller:
     # initialization method
-    def __init__(self):
+    def __init__(self,count,count0):
         # Drone state
         self.state = State()
         # Instantiate a setpoints message
@@ -109,11 +112,14 @@ class Controller:
         self.sp.position.x = 0.0
         self.sp.position.y = 0.0
 
+        self.count = count
+        self.count0 = count0
+        self.data = np.zeros((self.count0,7))
+
         # speed of the drone is set using MPC_XY_CRUISE parameter in MAVLink
         # using QGroundControl. By default it is 5 m/s.
 
 	# Callbacks
-
     ## local position callback
     def posCb(self, msg):
         self.local_pos.x = msg.pose.position.x
@@ -126,8 +132,8 @@ class Controller:
 
     ## Update setpoint message
     def updateSp(self,t,height,radius,steps):
-        self.sp.position.x = 0#radius*np.cos(2*np.pi*t/steps)
-        self.sp.position.y = 0#radius*np.sin(2*np.pi*t/steps)
+        self.sp.position.x = radius*np.cos(2*np.pi*t/steps)
+        self.sp.position.y = radius*np.sin(2*np.pi*t/steps)
         z_points = 1500
 
         self.sp.position.z = height
@@ -137,14 +143,43 @@ class Controller:
         #else:
         #    self.sp.position.z = height
 
+    def get_position(self,msg):
+        if self.count==self.count0:
+            print("logging started")
+            self.time = time.time()
+
+        if self.count<=self.count0 and self.count>0:
+            print(self.count)
+            row = self.count0-self.count
+            current_time = time.time()-self.time
+            self.data[row][0] = current_time
+            self.data[row][1] = msg.pose[37].position.x
+            self.data[row][2] = msg.pose[37].position.y
+            self.data[row][3] = msg.pose[37].position.z
+            self.data[row][4] = msg.pose[1].position.x
+            self.data[row][5] = msg.pose[1].position.y
+            self.data[row][6] = msg.pose[1].position.z
+        if self.count ==1:
+            print("done")
+            np.savetxt('test.csv',self.data,delimiter=',')
+        self.count -= 1
 
 # Main function
 def main():
     #setpoints for the trajectory
-    radius = 0.0
-    steps = 200
+    radius = 2.0
+    freq = 100.0
+
+    times =  10.0#time to make one circle
+
+    count0 = 10000 #this is the time
+
+    count = count0+10000
+
     waits = 300
-    height = 6.0
+    height = 23.0
+
+    steps = freq*times
 
     # initiate node
     rospy.init_node('setpoint_node', anonymous=True)
@@ -153,10 +188,10 @@ def main():
     modes = fcuModes()
 
     # controller object
-    cnt = Controller()
+    cnt = Controller(count,count0)
 
     # ROS loop rate
-    rate = rospy.Rate(100.0)
+    rate = rospy.Rate(freq)
 
     # Subscribe to drone state
     rospy.Subscriber('mavros/state', State, cnt.stateCb)
@@ -164,11 +199,14 @@ def main():
     # Subscribe to drone's local position
     rospy.Subscriber('mavros/local_position/pose', PoseStamped, cnt.posCb)
 
+    # Subscribe to gazebo link_states
+    rospy.Subscriber('/gazebo/link_states', LinkStates, cnt.get_position)
+
     # Setpoint publisher
     sp_pub = rospy.Publisher('mavros/setpoint_raw/local', PositionTarget, queue_size=1)
 
     # Attitude Publisher
-    sp_att = rospy.Publisher('mavros/setpoint_raw/attitude', AttitudeTarget, queue_size=1)
+    #sp_att = rospy.Publisher('mavros/setpoint_raw/attitude', AttitudeTarget, queue_size=1)
 
     # Make sure the drone is armed
     while not cnt.state.armed:

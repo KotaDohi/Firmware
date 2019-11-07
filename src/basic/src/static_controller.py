@@ -94,7 +94,7 @@ class Controller:
         self.uav_att.z = yaw
 
     def lqr_xr(self):
-        x = np.matrix([self.load_pos.x, self.load_vel.x, self.uav_pos.x, self.uav_vel.x, self.uav_att.y]).T
+        x = np.matrix([self.load_pos.x-0.2, self.load_vel.x, self.uav_pos.x, self.uav_vel.x, self.uav_att.y]).T
         A = np.array([[0, 1, 0, 0, 0],
                       [-self.g/self.l, 0, 0, 0, -self.g],
                       [0, 0, 0, 1, 0],
@@ -110,7 +110,7 @@ class Controller:
         self.omega_y = float(self.lqr(x,A,B,Q,R))
 
     def lqr_ys(self):
-        x = np.matrix([self.load_pos.y, self.load_vel.y, self.uav_pos.y, self.uav_vel.y, self.uav_att.x]).T
+        x = np.matrix([self.load_pos.y-0.2, self.load_vel.y, self.uav_pos.y, self.uav_vel.y, self.uav_att.x]).T
         A = np.array([[0, 1, 0, 0, 0],
                       [-self.g/self.l, 0, 0, 0, self.g],
                       [0, 0, 0, 1, 0],

@@ -23,6 +23,7 @@ class Controller:
         self.load_pos = Point(0.0, 0.0, 0.0)
         self.uav_vel = Point(0.0, 0.0, 0.0)
         self.load_vel = Point(0.0, 0.0, 0.0)
+        self.uav_att = Point(0.0, 0.0, 0.0)
         # Instantiate a attitude setpoints message
         self.sp = AttitudeTarget()
         # set the flag to use body_rates and thrust
@@ -35,7 +36,7 @@ class Controller:
         self.sp.thrust = 0
 
         # Desired rotational rate for UAV(rad/s)
-        self.omega = np.pi
+        self.omega = np.pi/10
 
         # Instantiate a position setpoints message
         self.pos_sp = PositionTarget()
@@ -54,9 +55,9 @@ class Controller:
         self.ALT_SP = 3.0
 
         # parameers of the system
-        self.l = 4.01 #length of the tether
-        self.r = 3.0 #radius of the UAV circle
-        self.p0 = 0.8 #radius of the load circle
+        self.l = 3.0 #length of the tether
+        self.r = 1.0 #radius of the UAV circle
+        self.p0 = 0.5 #radius of the load circle
         self.g = 9.80665 #gravity
 
     def init_position(self):
@@ -88,9 +89,22 @@ class Controller:
         orientation_q = msg.pose[1].orientation
         orientation_list = [orientation_q.x, orientation_q.y, orientation_q.z, orientation_q.w]
         (roll, pitch, yaw) = euler_from_quaternion(orientation_list)
+
         self.uav_att.x = roll
         self.uav_att.y = pitch
         self.uav_att.z = yaw
+
+    def cal_vatt(self):
+        b = self.uav_att.y
+        g = self.uav_att.x
+        o = self.omega*self.t
+
+        p1 = np.cos(b)*np.cos(g)
+        p2 = np.sin(b)*np.sin(g)*np.cos(g)*np.sin(2*o)
+        p3 = (np.cos(b)*np.cos(g)*np.sin(o)**2)**2+(np.cos(b)*np.cos(g)*np.sin(o)*np.cos(o))**2+(np.sin(g)*np.sin(o))**2-(np.sin(g)*np.cos(o))**2+np.cos(o)**4+(np.sin(o)*np.cos(o))**2
+        p4 = np.sqrt((np.cos(b)*np.cos(g)*np.sin(o))**4+2*(np.cos(b)*np.cos(g)*np.sin(o)*np.cos(o))**2+2*(np.cos(b)*np.sin(g)*np.cos(g)*np.sin(o))**2-2*(np.sin(g)*np.cos(o))**2+np.sin(g)**4+np.cos(o)**4)
+        self.mu = np.arccos( p1*np.sqrt(-p2+p3)/p4)
+        self.nu = np.arccos(np.cos(b)*np.cos(g)/np.cos(self.mu))
 
     def cal_x(self):
         uav_pos = np.array([self.uav_pos.x, self.uav_pos.y, self.uav_pos.z])
@@ -107,11 +121,13 @@ class Controller:
         inv_load_vel = np.dot(rot_matrix1[:2,:2], load_vel) - self.omega*np.dot(rot_matrix2[:2,:2], load_pos)
 
         self.lqr_x = np.matrix([inv_load_pos[0],  inv_load_vel[0], inv_load_pos[1], inv_load_vel[1], inv_uav_pos[0],
-        inv_uav_vel[0], inv_uav_pos[1], inv_uav_vel[1], inv_uav_pos[2], inv_uav_vel[2]]).T
+        inv_uav_vel[0], inv_uav_pos[1], inv_uav_vel[1], inv_uav_pos[2], inv_uav_vel[2], self.mu, self.nu]).T
         #print("lqr_x",self.lqr_x)
 
     def cal_AB(self):
         #calc all the components
+        print(self.l, self.p0)
+        print(self.l**2-self.p0**2)
         xi = np.sqrt(self.l**2-self.p0**2)
         a0 = np.sqrt(self.g**2+self.omega**4*self.r**2)
         mu0 = np.arctan(-self.omega**2*self.r/self.g)
@@ -132,43 +148,50 @@ class Controller:
         w1 = np.cos(mu0)
         w2 = -a0*np.sin(mu0)
 
-        self.A = np.array([[0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-                           [p1,0, 0, p2,0, 0, 0, 0, 0, 0],
-                           [0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-                           [0, q2,q1,0, 0, 0, 0, 0, 0, 0],
-                           [0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-                           [0, 0, 0, 0, u4,0, 0,u3, 0, 0],
-                           [0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-                           [0, 0, 0, 0, 0,v2,v3, 0, 0, 0],
-                           [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
+        self.A = np.array([[0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                           [p1,0, 0, p2,0, 0, 0, 0, 0, 0, p3,0],
+                           [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+                           [0, q2,q1,0, 0, 0, 0, 0, 0, 0, 0,q3],
+                           [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+                           [0, 0, 0, 0, u4,0, 0,u3, 0, 0,u2, 0],
+                           [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+                           [0, 0, 0, 0, 0,v2,v3, 0, 0, 0, 0,v1],
+                           [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+                           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,w2, 0],
+                           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0]])
 
         self.B = np.array([[0, 0, 0],
-                           [p3,0,p4],
+                           [0 ,0,p4],
                            [0, 0, 0],
-                           [0,q3, 0],
                            [0, 0, 0],
-                           [u2,0,u1],
                            [0, 0, 0],
-                           [0,v1, 0],
+                           [0 ,0,u1],
                            [0, 0, 0],
-                           [w2,0,w1]])
+                           [0, 0, 0],
+                           [0, 0, 0],
+                           [0 ,0,w1],
+                           [1, 0, 0],
+                           [0, 1, 0]])
         #print("A",self.A)
         #print("B",self.B)
 
     def lqr(self):
-        Q = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
-                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
+        Q = np.array([[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
+        Q = np.eye(12)
         #Q = np.zeros([10,10])
-        R = 1000*np.eye(3)
+        R = 10*np.eye(3)
         K, S, E = control.lqr(self.A, self.B, Q, R)
         #P = np.matrix(scipy.linalg.solve_discrete_are(self.A, self.B, Q, R))
         self.u = -scipy.linalg.inv(R)*(self.B.T*(S*self.lqr_x))
@@ -179,20 +202,34 @@ class Controller:
         #print("u",self.u)
 
     def cal_omegas(self):
-        gamma = np.arcsin(np.sin(float(self.u[1]))*np.cos(self.omega*self.t) - np.sin(float(self.u[0]))*np.cos(float(self.u[1]))*np.sin(self.omega*self.t))
-        print("gamma",gamma)
-        beta = np.arccos(np.cos(float(self.u[0]))*np.cos(float(self.u[1]))/np.cos(gamma))
-        print("beta",beta)
-        gamma_dot = (self.r*self.omega**3*np.arccos(gamma)*np.cos(self.omega*self.t))/np.sqrt(self.g**2+self.omega**4*self.r**2)
-        beta_dot = self.r*self.omega**3*np.arccos(gamma)*(np.tan(beta)*np.tan(gamma)*np.cos(self.omega*self.t)+np.arccos(beta)*np.sin(self.omega*self.t))/np.sqrt(self.g**2+self.omega**4*self.r**2)
+        b = self.uav_att.y
+        g = self.uav_att.x
+        o = self.omega
+        ot = self.omega*self.t
+        m = self.mu
+        n = self.nu
+        md = self.u[0]
+        nd = self.u[1]
 
-        rot_matrix = np.array([[np.cos(beta)*np.cos(gamma),-np.sin(gamma),0],[np.cos(beta)*np.sin(gamma),np.cos(gamma),0],[-np.sin(beta),0,1]])
+        g_dot = -(1/np.cos(g))*(o*np.cos(ot)*np.sin(m)*np.cos(n)+md*np.sin(ot)*np.cos(m)* np.cos(n)-nd*np.sin(ot)*np.sin(m)*np.sin(n)+o*np.sin(ot)*np.sin(n)-nd*np.cos(ot)*np.cos(n))
+        b_dot = -(1/(np.sin(b)*np.cos(g)))*(g_dot*np.cos(b)*np.sin(g)-md*np.sin(m)*np.cos(n)-nd*np.cos(m)*np.sin(n))
 
-        euler = np.array([gamma_dot,beta_dot,0])
+        rot_matrix = np.array([[np.cos(b)*np.cos(g),-np.sin(g),0],[np.cos(b)*np.sin(g),np.cos(g),0],[-np.sin(b),0,1]])
+
+        euler = np.array([g_dot,b_dot,0])
         self.omegas = np.dot(rot_matrix,euler)
+
+        #rot_matrix = np.array([[np.cos(beta)*np.cos(gamma),-np.sin(gamma),0],[np.cos(beta)*np.sin(gamma),np.cos(gamma),0],[-np.sin(beta),0,1]])
+        #gamma = np.arcsin(np.sin(float(self.u[1]))*np.cos(self.omega*self.t) - np.sin(float(self.u[0]))*np.cos(float(self.u[1]))*np.sin(self.omega*self.t))
+        #print("gamma",gamma)
+        #beta = np.arccos(np.cos(float(self.u[0]))*np.cos(float(self.u[1]))/np.cos(gamma))
+        #print("beta",beta)
+        #gamma_dot = (self.r*self.omega**3*np.arccos(gamma)*np.cos(self.omega*self.t))/np.sqrt(self.g**2+self.omega**4*self.r**2)
+        #beta_dot = self.r*self.omega**3*np.arccos(gamma)*(np.tan(beta)*np.tan(gamma)*np.cos(self.omega*self.t)+np.arccos(beta)*np.sin(self.omega*self.t))/np.sqrt(self.g**2+self.omega**4*self.r**2)
 
     def output(self,t):
         self.t = t
+        self.cal_vatt()
         self.cal_x()
         self.cal_AB()
         self.lqr()
@@ -200,10 +237,10 @@ class Controller:
         self.sp.body_rate.x = self.omegas[0]
         self.sp.body_rate.y = self.omegas[1]
         self.sp.body_rate.z = self.omegas[2]
-        if self.a >=0:
-            self.sp.thrust = 0.613 + self.a/40.54
+        if self.u[2] >=0:
+            self.sp.thrust = 0.613 + self.u[2]/40.54
         else:
-            self.sp.thrust = 0.613 + self.a/15.98
+            self.sp.thrust = 0.613 + self.u[2]/15.98
         print("omegas",self.omegas[0],self.omegas[1],self.omegas[2],float(self.u[2]))
 
 def main():
@@ -261,7 +298,7 @@ def main():
 
     # ROS main loop
     t_start = time.time()
-    cnt.p0 = cnt.uav_pos.x - cnt.load_pos.x
+    #cnt.p0 = cnt.uav_pos.x - cnt.load_pos.x
     while not rospy.is_shutdown():
         t = time.time() - t_start
         cnt.output(t)
