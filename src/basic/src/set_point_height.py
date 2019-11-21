@@ -84,14 +84,14 @@ class fcuModes:
 
 class Controller:
     # initialization method
-    def __init__(self,count,count0):
+    def __init__(self):
         # Drone state
         self.state = State()
         # Instantiate a setpoints message
         self.sp = PositionTarget()
         # set the flag to use position setpoints and yaw angle
         #check http://docs.ros.org/api/mavros_msgs/html/msg/PositionTarget.html
-        self.sp.type_mask = int('010111111000', 2)
+        self.sp.type_mask = int('111111111000', 2)
         # LOCAL_NED
         self.sp.coordinate_frame = 1
 
@@ -112,9 +112,9 @@ class Controller:
         self.sp.position.x = 0.0
         self.sp.position.y = 0.0
 
-        self.count = count
-        self.count0 = count0
-        self.data = np.zeros((self.count0,10))
+        #self.count = count
+        #self.count0 = count0
+        #self.data = np.zeros((self.count0,10))
 
         # speed of the drone is set using MPC_XY_CRUISE parameter in MAVLink
         # using QGroundControl. By default it is 5 m/s.
@@ -131,12 +131,15 @@ class Controller:
         self.state = msg
 
     ## Update setpoint message
-    def updateSp(self,t,height,radius,steps):
-        self.sp.position.x = radius*np.cos(2*np.pi*t/steps)
-        self.sp.position.y = radius*np.sin(2*np.pi*t/steps)
-        z_points = 1500
+    def updateSp(self):
+        self.sp.position.x = 0.6
+        self.sp.position.y = 2.8
+        self.sp.position.z = 1.2
+        #self.sp.position.x = radius*np.cos(2*np.pi*t/steps)
+        #self.sp.position.y = radius*np.sin(2*np.pi*t/steps)
+        #z_points = 1500
 
-        self.sp.position.z = height
+        #self.sp.position.z = height
         #if t<1500:
         #    self.sp.position.z = height/1500*t
         #    print(self.sp.position.z)
@@ -170,19 +173,19 @@ class Controller:
 # Main function
 def main():
     #setpoints for the trajectory
-    radius = 4.0
+    #radius = 4.0
     freq = 100.0
 
-    times = 5.0#time to make one circle
+    #times = 5.0#time to make one circle
 
-    count0 = 10000 #this is the time
+    #count0 = 10000 #this is the time
 
-    count = count0+20000
+    #count = count0+20000
 
-    waits = 300
-    height = 23.0
+    #waits = 300
+    #height = 23.0
 
-    steps = freq*times
+    #steps = freq*times
 
     # initiate node
     rospy.init_node('setpoint_node', anonymous=True)
@@ -191,7 +194,7 @@ def main():
     modes = fcuModes()
 
     # controller object
-    cnt = Controller(count,count0)
+    cnt = Controller()
 
     # ROS loop rate
     rate = rospy.Rate(freq)
@@ -200,10 +203,10 @@ def main():
     rospy.Subscriber('mavros/state', State, cnt.stateCb)
 
     # Subscribe to drone's local position
-    rospy.Subscriber('mavros/local_position/pose', PoseStamped, cnt.posCb)
+    #rospy.Subscriber('mavros/local_position/pose', PoseStamped, cnt.posCb)
 
     # Subscribe to gazebo link_states
-    rospy.Subscriber('/gazebo/link_states', LinkStates, cnt.get_position)
+    #rospy.Subscriber('/gazebo/link_states', LinkStates, cnt.get_position)
 
     # Setpoint publisher
     sp_pub = rospy.Publisher('mavros/setpoint_raw/local', PositionTarget, queue_size=1)
@@ -217,8 +220,8 @@ def main():
         rate.sleep()
 
     # set in takeoff mode and takeoff to default altitude (3 m)
-    modes.setTakeoff()
-    rate.sleep()
+    #modes.setTakeoff()
+    #rate.sleep()
 
     # We need to send few setpoint messages, then activate OFFBOARD mode, to take effect
     k = 0
@@ -231,12 +234,10 @@ def main():
     modes.setOffboardMode()
 
     # ROS main loop
-    t = 0
     print("start")
     while not rospy.is_shutdown():
-    	cnt.updateSp(t,height,radius,steps)
+    	cnt.updateSp()
     	sp_pub.publish(cnt.sp)
-        t+=1
     	rate.sleep()
 
 if __name__ == '__main__':

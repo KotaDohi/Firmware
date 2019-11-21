@@ -34,6 +34,8 @@ class Controller:
         self.sp.body_rate.y = 0
         self.sp.body_rate.z = 0
         self.sp.thrust = 0
+        self.omega_x = 0
+        self.omega_y = 0
 
         # Desired rotational rate for UAV(rad/s)
         self.omega = np.pi
@@ -60,6 +62,10 @@ class Controller:
         self.p0 = 0.8 #radius of the load circle
         self.g = 9.80665 #gravity
 
+        self.count = 6000
+        self.count0 = self.count - 100
+        self.data = np.zeros((self.count,10))
+
     def init_position(self):
         self.pos_sp.position.x = 2.0
         self.pos_sp.position.y = 0
@@ -69,7 +75,7 @@ class Controller:
     def stateCb(self, msg):
         self.state = msg
 
-    def get_position(self,msg):
+    def get_position(self,msg):#9 or 9
         self.load_pos.x = msg.pose[9].position.x - msg.pose[1].position.x
         self.load_pos.y = msg.pose[9].position.y - msg.pose[1].position.y
         self.load_pos.z = msg.pose[9].position.z
@@ -92,6 +98,29 @@ class Controller:
         self.uav_att.x = roll
         self.uav_att.y = pitch
         self.uav_att.z = yaw
+
+        if self.count==self.count0:
+            print("logging started")
+            self.time = time.time()
+
+        if self.count<=self.count0 and self.count>0:
+            print(self.count)
+            row = self.count0-self.count
+            current_time = time.time()-self.time
+            self.data[row][0] = current_time
+            self.data[row][1] = self.uav_pos.x
+            self.data[row][2] = self.uav_pos.y
+            self.data[row][3] = self.uav_pos.z
+            self.data[row][4] = self.load_pos.x
+            self.data[row][5] = self.load_pos.y
+            self.data[row][6] = self.load_pos.z
+            self.data[row][7] = self.omega_x
+            self.data[row][8] = self.omega_y
+            self.data[row][9] = self.sp.thrust
+        if self.count ==1:
+            print("done")
+            np.savetxt('test.csv',self.data,delimiter=',')
+        self.count -= 1
 
     def lqr_xr(self):
         x = np.matrix([self.load_pos.x-0.2, self.load_vel.x, self.uav_pos.x, self.uav_vel.x, self.uav_att.y]).T
@@ -142,7 +171,7 @@ class Controller:
     def lqr(self,x,A,B,Q,R):
         K, S, E = control.lqr(A, B, Q, R)
         u = -scipy.linalg.inv(R)*(B.T*(S*x))
-        print("x",x)
+        #print("x",x)
         #print("B",self.B)
         return u
 
@@ -157,7 +186,7 @@ class Controller:
             self.sp.thrust = 0.613 + self.a/40.54
         else:
             self.sp.thrust = 0.613 + self.a/15.98
-        print("omegas",self.sp.body_rate.x, self.sp.body_rate.y, self.sp.thrust)
+        #print("omegas",self.sp.body_rate.x, self.sp.body_rate.y, self.sp.thrust)
 
 def main():
     # initiate node
@@ -168,7 +197,7 @@ def main():
 
     # flight Controller
     cnt = Controller()
-    rate = rospy.Rate(20.0)
+    rate = rospy.Rate(100.0)
 
     # Subscribe to drone state
     rospy.Subscriber('mavros/state', State, cnt.stateCb)
@@ -201,13 +230,13 @@ def main():
     # wait until the altitude of UAV is 5m
     cnt.init_position()
     while cnt.uav_pos.z<4.95 or cnt.uav_pos.x>2.05:
-        print("uav_pos_z:",cnt.uav_pos.z)
+        #print("uav_pos_z:",cnt.uav_pos.z)
         #print("load_pos_z:",cnt.load_pos.z)
-        print("uav_x",cnt.uav_pos.x)
+        #print("uav_x",cnt.uav_pos.x)
         #print("uav_y",cnt.uav_pos.y)
-        print("load_x",cnt.load_pos.x)
+        #print("load_x",cnt.load_pos.x)
         #print("load_y",cnt.load_pos.y)
-        print("----------------")
+        #print("----------------")
     	pos_pub.publish(cnt.pos_sp)
     print("reached")
     time.sleep(0.1)
@@ -219,10 +248,10 @@ def main():
         t = time.time() - t_start
         cnt.output(t)
         at_pub.publish(cnt.sp)
-        print("uav_x",cnt.uav_pos.x)
-        print("uav_y",cnt.uav_pos.y)
-        print("uav_pos_z:",cnt.uav_pos.z)
-        print("----------------")
+        #print("uav_x",cnt.uav_pos.x)
+        #print("uav_y",cnt.uav_pos.y)
+        #print("uav_pos_z:",cnt.uav_pos.z)
+        #print("----------------")
     	rate.sleep()
 
 if __name__ == '__main__':

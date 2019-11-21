@@ -35,9 +35,6 @@ class Controller:
         self.sp.body_rate.z = 0
         self.sp.thrust = 0
 
-        # Desired rotational rate for UAV(rad/s)
-        self.omega = np.pi/10
-
         # Instantiate a position setpoints message
         self.pos_sp = PositionTarget()
         self.pos_sp.type_mask = int('010111111000', 2)
@@ -45,6 +42,8 @@ class Controller:
         self.pos_sp.position.x = 0
         self.pos_sp.position.y = 0
         self.pos_sp.position.z = 3
+        self.omega_x = 0
+        self.omega_y = 0
 
         # Step size for position update
         self.STEP_SIZE = 2.0
@@ -56,12 +55,20 @@ class Controller:
 
         # parameers of the system
         self.l = 3.0 #length of the tether
-        self.r = 1.0 #radius of the UAV circle
-        self.p0 = 0.5 #radius of the load circle
+        self.r = 0.01 #radius of the UAV circle
+        k = 1.2 #radius of the payload circle /R (1 to 2)
+
+        # parameters defined by other parameters
         self.g = 9.80665 #gravity
+        self.p0 = - k*self.r
+        self.omega = np.sqrt(k*self.g/(k*(self.l**2-self.p0**2)-self.l**2+self.p0**2))*(self.l**2-self.p0**2)**0.25
+
+        self.count = 6000
+        self.count0 = self.count - 100
+        self.data = np.zeros((self.count,10))
 
     def init_position(self):
-        self.pos_sp.position.x = 3.0
+        self.pos_sp.position.x = self.r
         self.pos_sp.position.y = 0
         self.pos_sp.position.z = 5.0
 
@@ -93,6 +100,30 @@ class Controller:
         self.uav_att.x = roll
         self.uav_att.y = pitch
         self.uav_att.z = yaw
+        """
+        if self.count==self.count0:
+            print("logging started")
+            self.time = time.time()
+
+        if self.count<=self.count0 and self.count>0:
+            print(self.count)
+            row = self.count0-self.count
+            current_time = time.time()-self.time
+            self.data[row][0] = current_time
+            self.data[row][1] = self.uav_pos.x
+            self.data[row][2] = self.uav_pos.y
+            self.data[row][3] = self.uav_pos.z
+            self.data[row][4] = self.load_pos.x
+            self.data[row][5] = self.load_pos.y
+            self.data[row][6] = self.load_pos.z
+            self.data[row][7] = self.omega_x
+            self.data[row][8] = self.omega_y
+            self.data[row][9] = self.sp.thrust
+        if self.count ==1:
+            print("done")
+            np.savetxt('test.csv',self.data,delimiter=',')
+        self.count -= 1
+        """
 
     def cal_vatt(self):
         b = self.uav_att.y
@@ -126,8 +157,6 @@ class Controller:
 
     def cal_AB(self):
         #calc all the components
-        print(self.l, self.p0)
-        print(self.l**2-self.p0**2)
         xi = np.sqrt(self.l**2-self.p0**2)
         a0 = np.sqrt(self.g**2+self.omega**4*self.r**2)
         mu0 = np.arctan(-self.omega**2*self.r/self.g)
@@ -219,14 +248,6 @@ class Controller:
         euler = np.array([g_dot,b_dot,0])
         self.omegas = np.dot(rot_matrix,euler)
 
-        #rot_matrix = np.array([[np.cos(beta)*np.cos(gamma),-np.sin(gamma),0],[np.cos(beta)*np.sin(gamma),np.cos(gamma),0],[-np.sin(beta),0,1]])
-        #gamma = np.arcsin(np.sin(float(self.u[1]))*np.cos(self.omega*self.t) - np.sin(float(self.u[0]))*np.cos(float(self.u[1]))*np.sin(self.omega*self.t))
-        #print("gamma",gamma)
-        #beta = np.arccos(np.cos(float(self.u[0]))*np.cos(float(self.u[1]))/np.cos(gamma))
-        #print("beta",beta)
-        #gamma_dot = (self.r*self.omega**3*np.arccos(gamma)*np.cos(self.omega*self.t))/np.sqrt(self.g**2+self.omega**4*self.r**2)
-        #beta_dot = self.r*self.omega**3*np.arccos(gamma)*(np.tan(beta)*np.tan(gamma)*np.cos(self.omega*self.t)+np.arccos(beta)*np.sin(self.omega*self.t))/np.sqrt(self.g**2+self.omega**4*self.r**2)
-
     def output(self,t):
         self.t = t
         self.cal_vatt()
@@ -237,11 +258,14 @@ class Controller:
         self.sp.body_rate.x = self.omegas[0]
         self.sp.body_rate.y = self.omegas[1]
         self.sp.body_rate.z = self.omegas[2]
+        self.omega_x = self.omegas[0]
+        self.omega_y = self.omegas[1]
+        self.a = self.u[2]
         if self.u[2] >=0:
             self.sp.thrust = 0.613 + self.u[2]/40.54
         else:
             self.sp.thrust = 0.613 + self.u[2]/15.98
-        print("omegas",self.omegas[0],self.omegas[1],self.omegas[2],float(self.u[2]))
+        #print("omegas",self.omegas[0],self.omegas[1],self.omegas[2],float(self.u[2]))
 
 def main():
     # initiate node
@@ -284,14 +308,7 @@ def main():
 
     # wait until the altitude of UAV is 5m
     cnt.init_position()
-    while cnt.uav_pos.z<5 or cnt.uav_pos.x<1 or cnt.uav_pos.x>3:
-        print("uav_pos_z:",cnt.uav_pos.z)
-        print("load_pos_z:",cnt.load_pos.z)
-        print("uav_x",cnt.uav_pos.x)
-        print("uav_y",cnt.uav_pos.y)
-        print("load_x",cnt.load_pos.x)
-        print("load_y",cnt.load_pos.y)
-        print("----------------")
+    while cnt.uav_pos.z<5:
     	pos_pub.publish(cnt.pos_sp)
     print("reached")
     time.sleep(0.1)
