@@ -1,0 +1,8 @@
+prefix=/home/fatima/Firmware/devel/.private/plotjuggler
+
+Name: plotjuggler
+Description: Description of plotjuggler
+Version: 2.4.3
+Cflags: -I/home/fatima/Firmware/src/PlotJuggler/include
+Libs: -L/home/fatima/Firmware/devel/.private/plotjuggler/lib 
+Requires: rosbag rosbag_storage roscpp roscpp_serialization ros_type_introspection rostime topic_tools tf diagnostic_msgs nav_msgs

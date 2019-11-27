@@ -1,0 +1,22 @@
+Not searching for unused variables given on the command line.
+[36m--[0m Version: 6.0.0
+[36m--[0m Build type:
+[36m--[0m CXX_STANDARD: 11
+[31m[1mCMake Error[0m at /usr/lib/x86_64-linux-gnu/cmake/Qt5/Qt5Config.cmake:28 (find_package):
+  Could not find a package configuration file provided by "Qt5Multimedia"
+  with any of the following names:
+
+    Qt5MultimediaConfig.cmake
+    qt5multimedia-config.cmake
+
+  Add the installation prefix of "Qt5Multimedia" to CMAKE_PREFIX_PATH or set
+  "Qt5Multimedia_DIR" to a directory containing one of the above files.  If
+  "Qt5Multimedia" provides a separate development package or SDK, be sure it
+  has been installed.
+[36mCall Stack (most recent call first):[0m
+  CMakeLists.txt:43 (find_package)
+
+
+[36m--[0m Configuring incomplete, errors occurred!
+See also "/home/fatima/Firmware/build/plotjuggler/CMakeFiles/CMakeOutput.log".
+See also "/home/fatima/Firmware/build/plotjuggler/CMakeFiles/CMakeError.log".

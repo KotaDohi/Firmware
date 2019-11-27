@@ -1,0 +1,275 @@
+[35m[1mScanning dependencies of target marl_autogen[0m
+[35m[1mScanning dependencies of target colorwidgets_autogen[0m
+[35m[1mScanning dependencies of target qwt_static_autogen[0m
+[35m[1mScanning dependencies of target fmt[0m
+[  0%] [34m[1mAutomatic MOC and UIC for target marl[0m
+[  2%] [34m[1mAutomatic MOC and UIC for target colorwidgets[0m
+[  2%] [34m[1mAutomatic MOC and UIC for target qwt_static[0m
+[  3%] [32mBuilding CXX object 3rdparty/fmt/CMakeFiles/fmt.dir/src/format.cc.o[0m
+[  3%] Built target marl_autogen
+[35m[1mScanning dependencies of target DataLoadCSV_autogen[0m
+[  4%] [34m[1mAutomatic MOC and UIC for target DataLoadCSV[0m
+[  4%] Built target DataLoadCSV_autogen
+[35m[1mScanning dependencies of target DataLoadULog_autogen[0m
+[  5%] [34m[1mAutomatic MOC and UIC for target DataLoadULog[0m
+[  5%] Built target colorwidgets_autogen
+[35m[1mScanning dependencies of target DataStreamSample_autogen[0m
+[  5%] [34m[1mAutomatic MOC and UIC for target DataStreamSample[0m
+[  5%] Built target DataLoadULog_autogen
+[35m[1mScanning dependencies of target nav_msgs_generate_messages_py[0m
+[  5%] Built target nav_msgs_generate_messages_py
+[35m[1mScanning dependencies of target nav_msgs_generate_messages_lisp[0m
+[  5%] Built target nav_msgs_generate_messages_lisp
+[35m[1mScanning dependencies of target nav_msgs_generate_messages_eus[0m
+[  5%] Built target nav_msgs_generate_messages_eus
+[  5%] Built target DataStreamSample_autogen
+[35m[1mScanning dependencies of target nav_msgs_generate_messages_cpp[0m
+[35m[1mScanning dependencies of target diagnostic_msgs_generate_messages_py[0m
+[  5%] Built target diagnostic_msgs_generate_messages_py
+[  5%] Built target nav_msgs_generate_messages_cpp
+[35m[1mScanning dependencies of target diagnostic_msgs_generate_messages_nodejs[0m
+[35m[1mScanning dependencies of target diagnostic_msgs_generate_messages_lisp[0m
+[  5%] Built target diagnostic_msgs_generate_messages_nodejs
+[  5%] Built target diagnostic_msgs_generate_messages_lisp
+[35m[1mScanning dependencies of target diagnostic_msgs_generate_messages_eus[0m
+[35m[1mScanning dependencies of target tf2_msgs_generate_messages_nodejs[0m
+[  5%] Built target diagnostic_msgs_generate_messages_eus
+[  5%] Built target tf2_msgs_generate_messages_nodejs
+[35m[1mScanning dependencies of target tf2_msgs_generate_messages_py[0m
+[35m[1mScanning dependencies of target tf2_msgs_generate_messages_lisp[0m
+[  5%] Built target tf2_msgs_generate_messages_py
+[  5%] Built target tf2_msgs_generate_messages_lisp
+[35m[1mScanning dependencies of target tf2_msgs_generate_messages_eus[0m
+[35m[1mScanning dependencies of target tf2_msgs_generate_messages_cpp[0m
+[  5%] Built target tf2_msgs_generate_messages_eus
+[  5%] Built target tf2_msgs_generate_messages_cpp
+[  5%] [32mBuilding CXX object 3rdparty/fmt/CMakeFiles/fmt.dir/src/posix.cc.o[0m
+[35m[1mScanning dependencies of target actionlib_msgs_generate_messages_py[0m
+[  5%] Built target actionlib_msgs_generate_messages_py
+[35m[1mScanning dependencies of target diagnostic_msgs_generate_messages_cpp[0m
+[  5%] Built target diagnostic_msgs_generate_messages_cpp
+[35m[1mScanning dependencies of target actionlib_msgs_generate_messages_lisp[0m
+[  5%] Built target actionlib_msgs_generate_messages_lisp
+[35m[1mScanning dependencies of target actionlib_msgs_generate_messages_eus[0m
+[  5%] Built target actionlib_msgs_generate_messages_eus
+[35m[1mScanning dependencies of target actionlib_generate_messages_nodejs[0m
+[  5%] Built target actionlib_generate_messages_nodejs
+[35m[1mScanning dependencies of target actionlib_generate_messages_eus[0m
+[  5%] Built target actionlib_generate_messages_eus
+[35m[1mScanning dependencies of target sensor_msgs_generate_messages_eus[0m
+[  5%] Built target sensor_msgs_generate_messages_eus
+[35m[1mScanning dependencies of target sensor_msgs_generate_messages_cpp[0m
+[  5%] Built target sensor_msgs_generate_messages_cpp
+[35m[1mScanning dependencies of target geometry_msgs_generate_messages_py[0m
+[  5%] Built target geometry_msgs_generate_messages_py
+[35m[1mScanning dependencies of target rosgraph_msgs_generate_messages_nodejs[0m
+[  5%] Built target rosgraph_msgs_generate_messages_nodejs
+[35m[1mScanning dependencies of target rosgraph_msgs_generate_messages_py[0m
+[  5%] Built target rosgraph_msgs_generate_messages_py
+[  5%] Built target qwt_static_autogen
+[35m[1mScanning dependencies of target std_msgs_generate_messages_eus[0m
+[35m[1mScanning dependencies of target sensor_msgs_generate_messages_py[0m
+[  5%] Built target std_msgs_generate_messages_eus
+[  5%] Built target sensor_msgs_generate_messages_py
+[35m[1mScanning dependencies of target rosgraph_msgs_generate_messages_lisp[0m
+[35m[1mScanning dependencies of target tf_generate_messages_py[0m
+[  5%] Built target rosgraph_msgs_generate_messages_lisp
+[  5%] Built target tf_generate_messages_py
+[35m[1mScanning dependencies of target rosgraph_msgs_generate_messages_eus[0m
+[35m[1mScanning dependencies of target actionlib_msgs_generate_messages_cpp[0m
+[  5%] Built target rosgraph_msgs_generate_messages_eus
+[  5%] Built target actionlib_msgs_generate_messages_cpp
+[35m[1mScanning dependencies of target std_srvs_generate_messages_cpp[0m
+[  5%] Built target std_srvs_generate_messages_cpp
+[35m[1mScanning dependencies of target tf_generate_messages_eus[0m
+[35m[1mScanning dependencies of target roscpp_generate_messages_py[0m
+[  5%] Built target tf_generate_messages_eus
+[  5%] Built target roscpp_generate_messages_py
+[35m[1mScanning dependencies of target std_msgs_generate_messages_py[0m
+[35m[1mScanning dependencies of target geometry_msgs_generate_messages_eus[0m
+[  5%] Built target std_msgs_generate_messages_py
+[  5%] Built target geometry_msgs_generate_messages_eus
+[35m[1mScanning dependencies of target roscpp_generate_messages_nodejs[0m
+[35m[1mScanning dependencies of target roscpp_generate_messages_eus[0m
+[  5%] Built target roscpp_generate_messages_nodejs
+[  5%] Built target roscpp_generate_messages_eus
+[35m[1mScanning dependencies of target roscpp_generate_messages_lisp[0m
+[35m[1mScanning dependencies of target tf_generate_messages_lisp[0m
+[35m[1mScanning dependencies of target actionlib_generate_messages_cpp[0m
+[  5%] Built target roscpp_generate_messages_lisp
+[  5%] Built target tf_generate_messages_lisp
+[  5%] Built target actionlib_generate_messages_cpp
+[35m[1mScanning dependencies of target sensor_msgs_generate_messages_nodejs[0m
+[35m[1mScanning dependencies of target roscpp_generate_messages_cpp[0m
+[35m[1mScanning dependencies of target nav_msgs_generate_messages_nodejs[0m
+[  5%] Built target sensor_msgs_generate_messages_nodejs
+[  5%] Built target roscpp_generate_messages_cpp
+[  5%] Built target nav_msgs_generate_messages_nodejs
+[35m[1mScanning dependencies of target actionlib_msgs_generate_messages_nodejs[0m
+[35m[1mScanning dependencies of target std_msgs_generate_messages_cpp[0m
+[35m[1mScanning dependencies of target geometry_msgs_generate_messages_nodejs[0m
+[  5%] Built target actionlib_msgs_generate_messages_nodejs
+[  5%] Built target geometry_msgs_generate_messages_nodejs
+[  5%] Built target std_msgs_generate_messages_cpp
+[35m[1mScanning dependencies of target tf_generate_messages_nodejs[0m
+[35m[1mScanning dependencies of target std_msgs_generate_messages_lisp[0m
+[  5%] Built target tf_generate_messages_nodejs
+[35m[1mScanning dependencies of target tf_generate_messages_cpp[0m
+[  5%] Built target std_msgs_generate_messages_lisp
+[35m[1mScanning dependencies of target std_msgs_generate_messages_nodejs[0m
+[  5%] Built target tf_generate_messages_cpp
+[35m[1mScanning dependencies of target sensor_msgs_generate_messages_lisp[0m
+[  5%] Built target sensor_msgs_generate_messages_lisp
+[  5%] Built target std_msgs_generate_messages_nodejs
+[35m[1mScanning dependencies of target std_srvs_generate_messages_eus[0m
+[35m[1mScanning dependencies of target std_srvs_generate_messages_nodejs[0m
+[  5%] Built target std_srvs_generate_messages_eus
+[35m[1mScanning dependencies of target actionlib_generate_messages_lisp[0m
+[  5%] Built target std_srvs_generate_messages_nodejs
+[35m[1mScanning dependencies of target std_srvs_generate_messages_py[0m
+[  5%] Built target actionlib_generate_messages_lisp
+[  5%] Built target std_srvs_generate_messages_py
+[35m[1mScanning dependencies of target rosgraph_msgs_generate_messages_cpp[0m
+[35m[1mScanning dependencies of target topic_tools_generate_messages_cpp[0m
+[35m[1mScanning dependencies of target topic_tools_generate_messages_eus[0m
+[  5%] Built target rosgraph_msgs_generate_messages_cpp
+[  5%] Built target topic_tools_generate_messages_cpp
+[  5%] Built target topic_tools_generate_messages_eus
+[35m[1mScanning dependencies of target std_srvs_generate_messages_lisp[0m
+[35m[1mScanning dependencies of target topic_tools_generate_messages_lisp[0m
+[35m[1mScanning dependencies of target actionlib_generate_messages_py[0m
+[  5%] Built target topic_tools_generate_messages_lisp
+[  5%] Built target std_srvs_generate_messages_lisp
+[  5%] Built target actionlib_generate_messages_py
+[35m[1mScanning dependencies of target topic_tools_generate_messages_py[0m
+[35m[1mScanning dependencies of target topic_tools_generate_messages_nodejs[0m
+[35m[1mScanning dependencies of target geometry_msgs_generate_messages_lisp[0m
+[  5%] Built target topic_tools_generate_messages_py
+[  5%] Built target topic_tools_generate_messages_nodejs
+[  5%] Built target geometry_msgs_generate_messages_lisp
+[35m[1mScanning dependencies of target geometry_msgs_generate_messages_cpp[0m
+[35m[1mScanning dependencies of target marl[0m
+[  5%] Built target geometry_msgs_generate_messages_cpp
+[35m[1mScanning dependencies of target colorwidgets[0m
+[35m[1mScanning dependencies of target qwt_static[0m
+[  5%] [32mBuilding CXX object 3rdparty/marl/CMakeFiles/marl.dir/src/debug.cpp.o[0m
+[  5%] [32mBuilding CXX object 3rdparty/color_widgets/CMakeFiles/colorwidgets.dir/src/color_names.cpp.o[0m
+[  6%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_curve_fitter.cpp.o[0m
+[  6%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_bezier.cpp.o[0m
+[  7%] [32mBuilding CXX object 3rdparty/marl/CMakeFiles/marl.dir/src/memory.cpp.o[0m
+[  8%] [32m[1mLinking CXX static library libfmt.a[0m
+[  8%] Built target fmt
+[  8%] [32mBuilding CXX object 3rdparty/marl/CMakeFiles/marl.dir/src/scheduler.cpp.o[0m
+[  8%] [32mBuilding CXX object 3rdparty/marl/CMakeFiles/marl.dir/src/thread.cpp.o[0m
+[  9%] [32mBuilding CXX object 3rdparty/marl/CMakeFiles/marl.dir/src/trace.cpp.o[0m
+[ 10%] [32mBuilding CXX object 3rdparty/color_widgets/CMakeFiles/colorwidgets.dir/src/color_palette.cpp.o[0m
+[ 11%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_spline_curve_fitter.cpp.o[0m
+[ 11%] [32mBuilding C object 3rdparty/marl/CMakeFiles/marl.dir/src/osfiber_aarch64.c.o[0m
+[ 11%] [32mBuilding CXX object 3rdparty/color_widgets/CMakeFiles/colorwidgets.dir/src/color_utils.cpp.o[0m
+[ 11%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_weeding_curve_fitter.cpp.o[0m
+[ 13%] [32mBuilding CXX object 3rdparty/color_widgets/CMakeFiles/colorwidgets.dir/src/color_preview.cpp.o[0m
+[ 13%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_abstract_legend.cpp.o[0m
+[ 13%] [32mBuilding CXX object 3rdparty/color_widgets/CMakeFiles/colorwidgets.dir/src/color_wheel.cpp.o[0m
+[ 14%] [32mBuilding C object 3rdparty/marl/CMakeFiles/marl.dir/src/osfiber_arm.c.o[0m
+[ 14%] [32mBuilding ASM object 3rdparty/marl/CMakeFiles/marl.dir/src/osfiber_asm_aarch64.S.o[0m
+[ 15%] [32mBuilding ASM object 3rdparty/marl/CMakeFiles/marl.dir/src/osfiber_asm_arm.S.o[0m
+[ 15%] [32mBuilding ASM object 3rdparty/marl/CMakeFiles/marl.dir/src/osfiber_asm_ppc64.S.o[0m
+[ 15%] [32mBuilding CXX object 3rdparty/color_widgets/CMakeFiles/colorwidgets.dir/src/swatch.cpp.o[0m
+[ 15%] [32mBuilding ASM object 3rdparty/marl/CMakeFiles/marl.dir/src/osfiber_asm_x64.S.o[0m
+[ 16%] [32mBuilding ASM object 3rdparty/marl/CMakeFiles/marl.dir/src/osfiber_asm_x86.S.o[0m
+[ 16%] [32mBuilding C object 3rdparty/marl/CMakeFiles/marl.dir/src/osfiber_ppc64.c.o[0m
+[ 17%] [32mBuilding C object 3rdparty/marl/CMakeFiles/marl.dir/src/osfiber_x64.c.o[0m
+[ 17%] [32mBuilding C object 3rdparty/marl/CMakeFiles/marl.dir/src/osfiber_x86.c.o[0m
+[ 18%] [32mBuilding CXX object 3rdparty/marl/CMakeFiles/marl.dir/marl_autogen/mocs_compilation.cpp.o[0m
+[ 18%] [32m[1mLinking CXX static library /home/fatima/Firmware/devel/.private/plotjuggler/lib/libmarl.a[0m
+[ 18%] Built target marl
+[ 18%] [34m[1mGenerating ui_selectlistdialog.h[0m
+[35m[1mScanning dependencies of target DataLoadCSV[0m
+[ 18%] [32mBuilding CXX object plugins/DataLoadCSV/CMakeFiles/DataLoadCSV.dir/dataload_csv.cpp.o[0m
+[ 19%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_legend.cpp.o[0m
+[ 20%] [32mBuilding CXX object plugins/DataLoadCSV/CMakeFiles/DataLoadCSV.dir/DataLoadCSV_autogen/mocs_compilation.cpp.o[0m
+[ 21%] [32mBuilding CXX object 3rdparty/color_widgets/CMakeFiles/colorwidgets.dir/colorwidgets_autogen/mocs_compilation.cpp.o[0m
+[ 21%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_legend_data.cpp.o[0m
+[ 22%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_legend_label.cpp.o[0m
+[ 22%] [32m[1mLinking CXX shared library /home/fatima/Firmware/devel/.private/plotjuggler/lib/plotjuggler/libDataLoadCSV.so[0m
+[ 22%] Built target DataLoadCSV
+[ 22%] [34m[1mGenerating ui_ulog_parameters_dialog.h[0m
+[ 22%] [32m[1mLinking CXX static library /home/fatima/Firmware/devel/.private/plotjuggler/lib/libcolorwidgets.a[0m
+[ 23%] [34m[1mGenerating ui_selectlistdialog.h[0m
+[35m[1mScanning dependencies of target DataLoadULog[0m
+[ 23%] Built target colorwidgets
+[35m[1mScanning dependencies of target DataStreamSample[0m
+[ 25%] [32mBuilding CXX object plugins/DataLoadULog/CMakeFiles/DataLoadULog.dir/dataload_ulog.cpp.o[0m
+[ 26%] [32mBuilding CXX object plugins/DataStreamSample/CMakeFiles/DataStreamSample.dir/datastream_sample.cpp.o[0m
+[ 26%] [32mBuilding CXX object plugins/DataStreamSample/CMakeFiles/DataStreamSample.dir/DataStreamSample_autogen/mocs_compilation.cpp.o[0m
+[ 26%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_plot.cpp.o[0m
+[ 27%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_plot_renderer.cpp.o[0m
+[ 27%] [32mBuilding CXX object plugins/DataLoadULog/CMakeFiles/DataLoadULog.dir/ulog_parser.cpp.o[0m
+[ 28%] [32m[1mLinking CXX shared library /home/fatima/Firmware/devel/.private/plotjuggler/lib/plotjuggler/libDataStreamSample.so[0m
+[ 28%] Built target DataStreamSample
+[35m[1mScanning dependencies of target commonROS_autogen[0m
+[ 28%] [34m[1mAutomatic MOC and UIC for target commonROS[0m
+[ 28%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_plot_xml.cpp.o[0m
+[ 28%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_plot_axis.cpp.o[0m
+[ 29%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_plot_curve.cpp.o[0m
+[ 29%] [32mBuilding CXX object plugins/DataLoadULog/CMakeFiles/DataLoadULog.dir/ulog_parameters_dialog.cpp.o[0m
+[ 29%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_plot_dict.cpp.o[0m
+[ 30%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_plot_directpainter.cpp.o[0m
+[ 30%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_plot_grid.cpp.o[0m
+[ 30%] Built target commonROS_autogen
+[ 30%] [34m[1mGenerating ui_dialog_with_itemlist.h[0m
+[ 30%] [34m[1mGenerating ui_qnodedialog.h[0m
+[ 31%] [34m[1mGenerating ui_rule_editing.h[0m
+[ 31%] [34m[1mGenerating ui_dialog_select_ros_topics.h[0m
+[35m[1mScanning dependencies of target commonROS[0m
+[ 32%] [32mBuilding CXX object plugins/ROS/CMakeFiles/commonROS.dir/rule_editing.cpp.o[0m
+[ 33%] [32mBuilding CXX object plugins/DataLoadULog/CMakeFiles/DataLoadULog.dir/DataLoadULog_autogen/mocs_compilation.cpp.o[0m
+[ 34%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_plot_histogram.cpp.o[0m
+[ 34%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_plot_item.cpp.o[0m
+[ 34%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_plot_abstract_barchart.cpp.o[0m
+[ 35%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_plot_barchart.cpp.o[0m
+[ 35%] [32m[1mLinking CXX shared library /home/fatima/Firmware/devel/.private/plotjuggler/lib/plotjuggler/libDataLoadULog.so[0m
+[ 35%] Built target DataLoadULog
+[ 35%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_plot_multi_barchart.cpp.o[0m
+[ 36%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_plot_intervalcurve.cpp.o[0m
+[ 36%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_plot_zoneitem.cpp.o[0m
+[ 38%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_plot_tradingcurve.cpp.o[0m
+[ 38%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_plot_spectrogram.cpp.o[0m
+[ 38%] [32mBuilding CXX object plugins/ROS/CMakeFiles/commonROS.dir/qnodedialog.cpp.o[0m
+[ 38%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_plot_spectrocurve.cpp.o[0m
+[ 39%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_plot_scaleitem.cpp.o[0m
+[ 39%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_plot_legenditem.cpp.o[0m
+[ 40%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_plot_seriesitem.cpp.o[0m
+[ 40%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_plot_shapeitem.cpp.o[0m
+[ 41%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_plot_marker.cpp.o[0m
+[ 42%] [32mBuilding CXX object plugins/ROS/CMakeFiles/commonROS.dir/dialog_select_ros_topics.cpp.o[0m
+[ 42%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_plot_textlabel.cpp.o[0m
+[ 42%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_plot_layout.cpp.o[0m
+[ 43%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_plot_canvas.cpp.o[0m
+[ 43%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_plot_panner.cpp.o[0m
+[ 44%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_plot_rasteritem.cpp.o[0m
+[ 44%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_plot_picker.cpp.o[0m
+[ 45%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_plot_zoomer.cpp.o[0m
+[ 45%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_plot_magnifier.cpp.o[0m
+[ 45%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_plot_rescaler.cpp.o[0m
+[ 46%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_point_mapper.cpp.o[0m
+[ 46%] [32mBuilding CXX object plugins/ROS/CMakeFiles/commonROS.dir/RosMsgParsers/ros_parser.cpp.o[0m
+[ 46%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_raster_data.cpp.o[0m
+[ 47%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_matrix_raster_data.cpp.o[0m
+[ 47%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_sampling_thread.cpp.o[0m
+[ 48%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_series_data.cpp.o[0m
+[ 48%] [32mBuilding CXX object plugins/ROS/CMakeFiles/commonROS.dir/commonROS_autogen/mocs_compilation.cpp.o[0m
+[ 48%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_point_data.cpp.o[0m
+[ 48%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_scale_widget.cpp.o[0m
+[ 50%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_abstract_scale_draw.cpp.o[0m
+[ 50%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_clipper.cpp.o[0m
+[ 51%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_color_map.cpp.o[0m
+[ 51%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_column_symbol.cpp.o[0m
+[ 51%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_date.cpp.o[0m
+[ 52%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_date_scale_draw.cpp.o[0m
+[ 52%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_date_scale_engine.cpp.o[0m
+[ 53%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_dyngrid_layout.cpp.o[0m
+[ 53%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_event_pattern.cpp.o[0m
+[ 54%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_graphic.cpp.o[0m
+[ 54%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_interval.cpp.o[0m
+[ 54%] [32mBuilding CXX object qwt/src/CMakeFiles/qwt_static.dir/qwt_interval_symbol.cpp.o[0m
