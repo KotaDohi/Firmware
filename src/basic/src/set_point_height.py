@@ -18,14 +18,6 @@ class fcuModes:
     def __init__(self):
         pass
 
-    def setTakeoff(self):
-    	rospy.wait_for_service('mavros/cmd/takeoff')
-    	try:
-    		takeoffService = rospy.ServiceProxy('mavros/cmd/takeoff', mavros_msgs.srv.CommandTOL)
-    		takeoffService(altitude = 3)
-    	except rospy.ServiceException, e:
-    		print "Service takeoff call failed: %s"%e
-
     def setArm(self):
         rospy.wait_for_service('mavros/cmd/arming')
         try:
@@ -33,22 +25,6 @@ class fcuModes:
             armService(True)
         except rospy.ServiceException, e:
             print "Service arming call failed: %s"%e
-
-    def setDisarm(self):
-        rospy.wait_for_service('mavros/cmd/arming')
-        try:
-            armService = rospy.ServiceProxy('mavros/cmd/arming', mavros_msgs.srv.CommandBool)
-            armService(False)
-        except rospy.ServiceException, e:
-            print "Service disarming call failed: %s"%e
-
-    def setStabilizedMode(self):
-        rospy.wait_for_service('mavros/set_mode')
-        try:
-            flightModeService = rospy.ServiceProxy('mavros/set_mode', mavros_msgs.srv.SetMode)
-            flightModeService(custom_mode='STABILIZED')
-        except rospy.ServiceException, e:
-            print "service set_mode call failed: %s. Stabilized Mode could not be set."%e
 
     def setOffboardMode(self):
         rospy.wait_for_service('mavros/set_mode')
@@ -58,30 +34,6 @@ class fcuModes:
         except rospy.ServiceException, e:
             print "service set_mode call failed: %s. Offboard Mode could not be set."%e
 
-    def setAltitudeMode(self):
-        rospy.wait_for_service('mavros/set_mode')
-        try:
-            flightModeService = rospy.ServiceProxy('mavros/set_mode', mavros_msgs.srv.SetMode)
-            flightModeService(custom_mode='ALTCTL')
-        except rospy.ServiceException, e:
-            print "service set_mode call failed: %s. Altitude Mode could not be set."%e
-
-    def setPositionMode(self):
-        rospy.wait_for_service('mavros/set_mode')
-        try:
-            flightModeService = rospy.ServiceProxy('mavros/set_mode', mavros_msgs.srv.SetMode)
-            flightModeService(custom_mode='POSCTL')
-        except rospy.ServiceException, e:
-            print "service set_mode call failed: %s. Position Mode could not be set."%e
-
-    def setAutoLandMode(self):
-        rospy.wait_for_service('mavros/set_mode')
-        try:
-            flightModeService = rospy.ServiceProxy('mavros/set_mode', mavros_msgs.srv.SetMode)
-            flightModeService(custom_mode='AUTO.LAND')
-        except rospy.ServiceException, e:
-               print "service set_mode call failed: %s. Autoland Mode could not be set."%e
-
 class Controller:
     # initialization method
     def __init__(self):
@@ -89,52 +41,43 @@ class Controller:
         self.state = State()
         # Instantiate a setpoints message
         self.sp = PositionTarget()
-        # set the flag to use position setpoints and yaw angle
-        #check http://docs.ros.org/api/mavros_msgs/html/msg/PositionTarget.html
-        self.sp.type_mask = int('111111111000', 2)
-        # LOCAL_NED
-        self.sp.coordinate_frame = 1
-
-        # We will fly at a fixed altitude for now
-        # Altitude setpoint, [meters]
-        self.ALT_SP = 1.0
-        # update the setpoint message with the required altitude
-        self.sp.position.z = 0
-        # Step size for position update
-        self.STEP_SIZE = 2.0
-		# Fence. We will assume a square fence for now
-        self.FENCE_LIMIT = 5.0
-
-        # A Message for the current local position of the drone
-        self.local_pos = Point(0.0, 0.0, 3.0)
 
         # initial values for setpoints
         self.sp.position.x = 0.90
         self.sp.position.y = 2.205
-        self.sp.position.z = 1.2
+        self.sp.position.z = 3.2
 
-    ## local position callback
-    def posCb(self, msg):
-        self.local_pos.x = msg.pose.position.x
-        self.local_pos.y = msg.pose.position.y
-        self.local_pos.z = msg.pose.position.z
+        self.cenx = 0.761
+        self.ceny = 0.893
+        self.cenx = 0.90
+        self.ceny = 2.205
+
+        self.radi = 0.2
 
     ## Drone State callback
     def stateCb(self, msg):
         self.state = msg
 
     ## Update setpoint message
-    def updateSp(self):
-        self.sp.position.x = 0.508
-        self.sp.position.y = 2.40
-        self.sp.position.z = 1.2
+    def updateSp(self,t):
+        if t< 10.0:
+	    self.sp.position.x = 0.90
+	    self.sp.position.y = 2.205
+        self.sp.position.z = 1.6
+        if t < 25.0:
+            self.sp.position.x = self.cenx + self.radi;
+            self.sp.position.y = self.ceny;
+        else:
+            self.sp.position.x = self.cenx + self.radi*np.cos((t-25.0)/2.0*2*np.pi);
+            self.sp.position.y = self.ceny + self.radi*np.sin((t-25.0)/2.0*2*np.pi);
 
 # Main function
 def main():
+
+    start = time.time()
     #setpoints for the trajectory
     #radius = 4.0
     freq = 100.0
-
     # initiate node
     rospy.init_node('setpoint_node', anonymous=True)
 
@@ -151,7 +94,7 @@ def main():
     rospy.Subscriber('mavros/state', State, cnt.stateCb)
 
     # Setpoint publisher
-    sp_pub = rospy.Publisher('mavros/setpoint_position/local', PositionTarget, queue_size=1)
+    sp_pub = rospy.Publisher('mavros/setpoint_raw/local', PositionTarget, queue_size=1)
 
     # Make sure the drone is armed
     while not cnt.state.armed:
@@ -171,7 +114,9 @@ def main():
     # ROS main loop
     print("start")
     while not rospy.is_shutdown():
-    	cnt.updateSp()
+        fin = time.time()
+        t = fin-start
+    	cnt.updateSp(t)
     	sp_pub.publish(cnt.sp)
     	rate.sleep()
 

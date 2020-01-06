@@ -1,0 +1,31 @@
+[  0%] Built target std_msgs_generate_messages_nodejs
+[  0%] Built target rosgraph_msgs_generate_messages_nodejs
+[  0%] Built target std_msgs_generate_messages_cpp
+[  0%] Built target std_msgs_generate_messages_lisp
+[  0%] Built target roscpp_generate_messages_lisp
+[  0%] Built target roscpp_generate_messages_eus
+[  0%] Built target roscpp_generate_messages_cpp
+[  0%] Built target std_msgs_generate_messages_py
+[  0%] Built target roscpp_generate_messages_nodejs
+[  0%] Built target roscpp_generate_messages_py
+[  0%] Built target rosgraph_msgs_generate_messages_cpp
+[  0%] Built target rosgraph_msgs_generate_messages_lisp
+[  0%] Built target rosgraph_msgs_generate_messages_eus
+[  0%] Built target std_msgs_generate_messages_eus
+[  0%] Built target rosgraph_msgs_generate_messages_py
+[35m[1mScanning dependencies of target offb_node[0m
+[ 50%] [32mBuilding CXX object CMakeFiles/offb_node.dir/src/offb_node.cpp.o[0m
+[01m[K/home/fatima/Firmware/src/basic/src/offb_node.cpp:[m[K In function ‘[01m[Kint main(int, char**)[m[K’:
+[01m[K/home/fatima/Firmware/src/basic/src/offb_node.cpp:84:49:[m[K [01;31m[Kerror: [m[K‘[01m[KCLOCK_PER_SEC[m[K’ was not declared in this scope
+         double t = double(fin - start) / double([01;31m[KCLOCK_PER_SEC[m[K);
+                                                 [01;31m[K^~~~~~~~~~~~~[m[K
+[01m[K/home/fatima/Firmware/src/basic/src/offb_node.cpp:84:49:[m[K [01;36m[Knote: [m[Ksuggested alternative: ‘[01m[KCLOCKS_PER_SEC[m[K’
+         double t = double(fin - start) / double([01;36m[KCLOCK_PER_SEC[m[K);
+                                                 [01;36m[K^~~~~~~~~~~~~[m[K
+                                                 [32m[KCLOCKS_PER_SEC[m[K
+CMakeFiles/offb_node.dir/build.make:62: recipe for target 'CMakeFiles/offb_node.dir/src/offb_node.cpp.o' failed
+CMakeFiles/Makefile2:81: recipe for target 'CMakeFiles/offb_node.dir/all' failed
+Makefile:140: recipe for target 'all' failed
+make[2]: *** [CMakeFiles/offb_node.dir/src/offb_node.cpp.o] Error 1
+make[1]: *** [CMakeFiles/offb_node.dir/all] Error 2
+make: *** [all] Error 2

@@ -1,19 +1,23 @@
 [  0%] Built target rosgraph_msgs_generate_messages_nodejs
-[  0%] Built target std_msgs_generate_messages_nodejs
 [  0%] Built target std_msgs_generate_messages_lisp
 [  0%] Built target std_msgs_generate_messages_cpp
-[  0%] Built target std_msgs_generate_messages_py
+[  0%] Built target std_msgs_generate_messages_nodejs
 [  0%] Built target roscpp_generate_messages_cpp
-[  0%] Built target roscpp_generate_messages_eus
+[  0%] Built target std_msgs_generate_messages_py
 [  0%] Built target roscpp_generate_messages_lisp
+[  0%] Built target roscpp_generate_messages_eus
 [  0%] Built target roscpp_generate_messages_nodejs
-[  0%] Built target rosgraph_msgs_generate_messages_cpp
 [  0%] Built target rosgraph_msgs_generate_messages_eus
 [  0%] Built target roscpp_generate_messages_py
+[  0%] Built target rosgraph_msgs_generate_messages_cpp
 [  0%] Built target rosgraph_msgs_generate_messages_lisp
 [  0%] Built target std_msgs_generate_messages_eus
 [  0%] Built target rosgraph_msgs_generate_messages_py
 [35m[1mScanning dependencies of target offb_node[0m
 [ 50%] [32mBuilding CXX object CMakeFiles/offb_node.dir/src/offb_node.cpp.o[0m
+[01m[K/home/fatima/Firmware/src/basic/src/offb_node.cpp:[m[K In function ‘[01m[Kint main(int, char**)[m[K’:
+[01m[K/home/fatima/Firmware/src/basic/src/offb_node.cpp:85:24:[m[K [01;35m[Kwarning: [m[Kformat ‘[01m[K%d[m[K’ expects argument of type ‘[01m[Kint[m[K’, but argument 2 has type ‘[01m[Kdouble[m[K’ [[01;35m[K-Wformat=[m[K]
+         printf("%d\n",t[01;35m[K)[m[K;
+                        [01;35m[K^[m[K
 [100%] [32m[1mLinking CXX executable /home/fatima/Firmware/devel/.private/basic/lib/basic/offb_node[0m
 [100%] Built target offb_node

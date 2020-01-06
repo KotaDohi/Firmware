@@ -104,7 +104,7 @@ class Controller:
             self.time = time.time()
 
         if self.count<=self.count0 and self.count>0:
-            print(self.count)
+            #print(self.count)
             row = self.count0-self.count
             current_time = time.time()-self.time
             self.data[row][0] = current_time
@@ -135,7 +135,7 @@ class Controller:
                       [0, 0, 1, 0, 0],
                       [0, 0, 0, 0, 0],
                       [0, 0, 0, 0, 0]])
-        R = np.array([[1]])
+        R = np.array([[10]])
         self.omega_y = float(self.lqr(x,A,B,Q,R))
 
     def lqr_ys(self):
@@ -151,7 +151,7 @@ class Controller:
                       [0, 0, 1, 0, 0],
                       [0, 0, 0, 0, 0],
                       [0, 0, 0, 0, 0]])
-        R = np.array([[1]])
+        R = np.array([[10]])
         self.omega_x = float(self.lqr(x,A,B,Q,R))
 
     def lqr_z(self):
@@ -161,7 +161,7 @@ class Controller:
         B = np.matrix([0, 1]).T
         Q = np.array([[1, 0],
                      [0, 0]])
-        R = np.array([[1]])
+        R = np.array([[10]])
         self.a = float(self.lqr(x,A,B,Q,R))
         #calculate waypoint value for u
         xe = np.matrix([6.0, 0.0]).T
@@ -197,7 +197,7 @@ def main():
 
     # flight Controller
     cnt = Controller()
-    rate = rospy.Rate(100.0)
+    rate = rospy.Rate(20.0)
 
     # Subscribe to drone state
     rospy.Subscriber('mavros/state', State, cnt.stateCb)

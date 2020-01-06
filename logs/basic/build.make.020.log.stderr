@@ -1,0 +1,18 @@
+[01m[K/home/fatima/Firmware/src/basic/src/offb_node.cpp:[m[K In function ‘[01m[Kint main(int, char**)[m[K’:
+[01m[K/home/fatima/Firmware/src/basic/src/offb_node.cpp:84:9:[m[K [01;31m[Kerror: [m[K‘[01m[Kfin[m[K’ was not declared in this scope
+         [01;31m[Kdou[m[Kble t = double(fin - start) / double(CLOCK_PER_SEC);
+         [01;31m[K^~~[m[K
+[01m[K/home/fatima/Firmware/src/basic/src/offb_node.cpp:84:9:[m[K [01;36m[Knote: [m[Ksuggested alternative: ‘[01m[Ksin[m[K’
+         [01;36m[Kdou[m[Kble t = double(fin - start) / double(CLOCK_PER_SEC);
+         [01;36m[K^~~[m[K
+         [32m[Ksin[m[K
+[01m[K/home/fatima/Firmware/src/basic/src/offb_node.cpp:85:49:[m[K [01;31m[Kerror: [m[K‘[01m[KCLOCK_PER_SEC[m[K’ was not declared in this scope
+         if (t < 10.0){
+                                                 [01;31m[K^[m[K            
+[01m[K/home/fatima/Firmware/src/basic/src/offb_node.cpp:85:49:[m[K [01;36m[Knote: [m[Ksuggested alternative: ‘[01m[KCLOCKS_PER_SEC[m[K’
+         if (t < 10.0){
+                                                 [01;36m[K^[m[K            
+                                                 [32m[KCLOCKS_PER_SEC[m[K
+make[2]: *** [CMakeFiles/offb_node.dir/src/offb_node.cpp.o] Error 1
+make[1]: *** [CMakeFiles/offb_node.dir/all] Error 2
+make: *** [all] Error 2

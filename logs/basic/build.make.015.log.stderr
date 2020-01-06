@@ -1,0 +1,17 @@
+[01m[K/home/fatima/Firmware/src/basic/src/offb_node.cpp:[m[K In function ‘[01m[Kint main(int, char**)[m[K’:
+[01m[K/home/fatima/Firmware/src/basic/src/offb_node.cpp:83:25:[m[K [01;31m[Kerror: [m[K‘[01m[Kstart[m[K’ was not declared in this scope
+         float t = fin - [01;31m[Kstart[m[K;
+                         [01;31m[K^~~~~[m[K
+[01m[K/home/fatima/Firmware/src/basic/src/offb_node.cpp:83:25:[m[K [01;36m[Knote: [m[Ksuggested alternative:
+In file included from [01m[K/opt/ros/melodic/include/ros/node_handle.h:47:0[m[K,
+                 from [01m[K/opt/ros/melodic/include/ros/ros.h:45[m[K,
+                 from [01m[K/home/fatima/Firmware/src/basic/src/offb_node.cpp:7[m[K:
+[01m[K/opt/ros/melodic/include/ros/init.h:184:18:[m[K [01;36m[Knote: [m[K  ‘[01m[Kros::start[m[K’
+ ROSCPP_DECL void [01;36m[Kstart[m[K();
+                  [01;36m[K^~~~~[m[K
+[01m[K/home/fatima/Firmware/src/basic/src/offb_node.cpp:89:11:[m[K [01;31m[Kerror: [m[Kexpected ‘[01m[K;[m[K’ before ‘[01m[Kpose[m[K’
+           [01;31m[Kpose[m[K.pose.position.y = sin((t-10.0)/60.0*2*M_PI)
+           [01;31m[K^~~~[m[K
+make[2]: *** [CMakeFiles/offb_node.dir/src/offb_node.cpp.o] Error 1
+make[1]: *** [CMakeFiles/offb_node.dir/all] Error 2
+make: *** [all] Error 2

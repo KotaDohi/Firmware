@@ -1,0 +1,10 @@
+[01m[K/home/fatima/Firmware/src/basic/src/offb_node.cpp:[m[K In function ‘[01m[Kint main(int, char**)[m[K’:
+[01m[K/home/fatima/Firmware/src/basic/src/offb_node.cpp:62:59:[m[K [01;31m[Kerror: [m[Kcannot convert ‘[01m[Kstd::chrono::_V2::system_clock::time_point {aka std::chrono::time_point<std::chrono::_V2::system_clock, std::chrono::duration<long int, std::ratio<1, 1000000000> > >}[m[K’ to ‘[01m[Kfloat[m[K’ in initialization
+     float start = std::chrono::high_resolution_clock::now([01;31m[K)[m[K;
+                                                           [01;31m[K^[m[K
+[01m[K/home/fatima/Firmware/src/basic/src/offb_node.cpp:82:61:[m[K [01;31m[Kerror: [m[Kcannot convert ‘[01m[Kstd::chrono::_V2::system_clock::time_point {aka std::chrono::time_point<std::chrono::_V2::system_clock, std::chrono::duration<long int, std::ratio<1, 1000000000> > >}[m[K’ to ‘[01m[Kfloat[m[K’ in initialization
+         float fin = std::chrono::high_resolution_clock::now([01;31m[K)[m[K;
+                                                             [01;31m[K^[m[K
+make[2]: *** [CMakeFiles/offb_node.dir/src/offb_node.cpp.o] Error 1
+make[1]: *** [CMakeFiles/offb_node.dir/all] Error 2
+make: *** [all] Error 2

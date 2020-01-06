@@ -9,6 +9,7 @@
 #include <mavros_msgs/CommandBool.h>
 #include <mavros_msgs/SetMode.h>
 #include <mavros_msgs/State.h>
+#include <cmath>
 
 mavros_msgs::State current_state;
 void state_cb(const mavros_msgs::State::ConstPtr& msg){
@@ -37,16 +38,18 @@ int main(int argc, char **argv)
         ros::spinOnce();
         rate.sleep();
     }
-
+    float radi = 1.5;
     geometry_msgs::PoseStamped pose;
-    pose.pose.position.x = 0;
-    pose.pose.position.y = 0;
-    pose.pose.position.z = 2;
+    float cenx = 0.761;
+    float ceny = 0.893;
+    pose.pose.position.x = cenx + radi;
+    pose.pose.position.y = ceny;
+    pose.pose.position.z = 3.25;
 
     //send a few setpoints before starting
-    for(int i = 100; ros::ok() && i > 0; --i){
         local_pos_pub.publish(pose);
         ros::spinOnce();
+        for(int i = 100; ros::ok() && i > 0; --i){
         rate.sleep();
     }
 
@@ -57,6 +60,8 @@ int main(int argc, char **argv)
     arm_cmd.request.value = true;
 
     ros::Time last_request = ros::Time::now();
+
+    double start = ros::Time::now().toSec();
 
     while(ros::ok()){
         if( current_state.mode != "OFFBOARD" &&
@@ -76,7 +81,16 @@ int main(int argc, char **argv)
                 last_request = ros::Time::now();
             }
         }
-
+        double fin = ros::Time::now().toSec();
+        double t = fin - start;
+        printf("%f\n",t);
+        if (t < 25.0){
+          pose.pose.position.x = cenx + radi;
+          pose.pose.position.y = ceny;
+        } else{
+          pose.pose.position.x = cenx + radi*cos((t-25.0)/7.5*2*M_PI);
+          pose.pose.position.y = ceny + radi*sin((t-25.0)/7.5*2*M_PI);
+        }
         local_pos_pub.publish(pose);
 
         ros::spinOnce();

@@ -276,7 +276,7 @@ def main():
 
     # flight Controller
     cnt = Controller()
-    rate = rospy.Rate(20.0)
+    rate = rospy.Rate(50.0) #usually above 50Hz
 
     # Subscribe to drone state
     rospy.Subscriber('mavros/state', State, cnt.stateCb)
